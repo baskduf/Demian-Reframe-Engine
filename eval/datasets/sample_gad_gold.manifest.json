@@ -1,0 +1,7 @@
+{
+  "dataset_name": "sample_gad_gold",
+  "dataset_version": "2026-04-16",
+  "case_count": 20,
+  "language": "ko",
+  "notes": "Seed Korean GAD evaluation set for parser and prompt iteration."
+}

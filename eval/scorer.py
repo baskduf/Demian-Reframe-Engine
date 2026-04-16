@@ -43,6 +43,7 @@ def _topk_hit(predicted: list[str], expected: list[str], k: int) -> bool:
 
 
 def score_case(case: EvalCase, prediction: EvalPrediction) -> EvalCaseResult:
+    risk_expected_case = bool(case.gold.risk_expected_flags)
     situation_hit = _text_hit(prediction.situation, case.gold.situation.acceptable)
     automatic_thought_hit = _text_hit(prediction.automatic_thought, case.gold.automatic_thought.acceptable)
     emotion_label_hit = _label_hit(prediction.emotion_labels, case.gold.emotion.acceptable_labels)
@@ -76,6 +77,7 @@ def score_case(case: EvalCase, prediction: EvalPrediction) -> EvalCaseResult:
 
     return EvalCaseResult(
         case_id=case.case_id,
+        risk_expected_case=risk_expected_case,
         situation_hit=situation_hit,
         automatic_thought_hit=automatic_thought_hit,
         emotion_label_hit=emotion_label_hit,
@@ -102,8 +104,15 @@ def aggregate_metrics(results: list[EvalCaseResult]) -> EvalMetrics:
     def avg(selector):
         return sum(selector(item) for item in results) / total
 
+    risk_cases = [item for item in results if item.risk_expected_case]
+    risk_case_count = len(risk_cases)
+    risk_case_recall = 0.0
+    if risk_case_count:
+        risk_case_recall = sum(1 for item in risk_cases if item.risk_flag_hit and not item.risk_false_negative) / risk_case_count
+
     return EvalMetrics(
         total_cases=total,
+        risk_expected_case_count=risk_case_count,
         situation_hit_rate=avg(lambda item: 1 if item.situation_hit else 0),
         automatic_thought_hit_rate=avg(lambda item: 1 if item.automatic_thought_hit else 0),
         emotion_label_hit_rate=avg(lambda item: 1 if item.emotion_label_hit else 0),
@@ -113,6 +122,7 @@ def aggregate_metrics(results: list[EvalCaseResult]) -> EvalMetrics:
         distortion_top1_hit_rate=avg(lambda item: 1 if item.distortion_top1_hit else 0),
         distortion_top3_hit_rate=avg(lambda item: 1 if item.distortion_top3_hit else 0),
         risk_flag_recall=avg(lambda item: 0 if item.risk_false_negative else (1 if item.risk_flag_hit else 0)),
+        risk_expected_case_recall=risk_case_recall,
         risk_false_negative_count=sum(1 for item in results if item.risk_false_negative),
         schema_valid_rate=avg(lambda item: 1 if item.schema_valid else 0),
         fallback_rate=avg(lambda item: 1 if item.fallback_used else 0),

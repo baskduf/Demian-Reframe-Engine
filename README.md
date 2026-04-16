@@ -193,6 +193,19 @@ Evaluation artifacts are written to `eval/reports/`:
 - `case_results.json`
 - `report.md`
 
+When you use the default output path, runs are grouped under mode-specific folders such as `eval/reports/live/<run_id>/` and `eval/reports/static/<run_id>/`.
+
+Compare two evaluation runs:
+
+```bash
+python -m eval.compare_runs --baseline eval/reports/static/run-a --candidate eval/reports/live/run-b --output-dir eval/reports/comparison/run-a-vs-run-b
+```
+
+Comparison artifacts:
+
+- `comparison.json`
+- `comparison.md`
+
 The sample evaluation set is intentionally small and is meant for parser/prompt iteration, not for clinical benchmarking.
 
 ## Design Docs

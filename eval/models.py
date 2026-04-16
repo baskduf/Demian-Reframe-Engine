@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -51,10 +52,14 @@ class EvalPrediction(BaseModel):
     banned_content: bool = False
     latency_ms: float = 0.0
     source: str = "static"
+    model_name: str = ""
+    prompt_version: str = ""
+    risk_prompt_version: str = ""
 
 
 class EvalMetrics(BaseModel):
     total_cases: int = 0
+    risk_expected_case_count: int = 0
     situation_hit_rate: float = 0.0
     automatic_thought_hit_rate: float = 0.0
     emotion_label_hit_rate: float = 0.0
@@ -64,6 +69,7 @@ class EvalMetrics(BaseModel):
     distortion_top1_hit_rate: float = 0.0
     distortion_top3_hit_rate: float = 0.0
     risk_flag_recall: float = 0.0
+    risk_expected_case_recall: float = 0.0
     risk_false_negative_count: int = 0
     schema_valid_rate: float = 0.0
     fallback_rate: float = 0.0
@@ -73,6 +79,7 @@ class EvalMetrics(BaseModel):
 
 class EvalCaseResult(BaseModel):
     case_id: str
+    risk_expected_case: bool = False
     situation_hit: bool
     automatic_thought_hit: bool
     emotion_label_hit: bool
@@ -97,3 +104,61 @@ class EvalRunConfig(BaseModel):
     mode: str = "static"
     include_live_risk_assist: bool = True
     allow_live_eval: bool = False
+    run_name: str | None = None
+    dataset_name: str | None = None
+    dataset_version: str | None = None
+    report_label: str | None = None
+
+
+class DatasetManifest(BaseModel):
+    dataset_name: str
+    dataset_version: str
+    case_count: int
+    language: str = "ko"
+    notes: str = ""
+
+
+class EvalRunMetadata(BaseModel):
+    run_name: str
+    report_label: str
+    run_timestamp: datetime
+    mode: str
+    dataset_name: str
+    dataset_version: str
+    dataset_path: str
+    case_count: int
+    live_eval_enabled: bool
+    include_live_risk_assist: bool
+    include_latency: bool = True
+    model_name: str = ""
+    prompt_version: str = ""
+    risk_prompt_version: str = ""
+
+
+class EvalSummary(BaseModel):
+    mode: str
+    skipped: bool = False
+    reason: str | None = None
+    run_metadata: EvalRunMetadata
+    metrics: EvalMetrics
+    case_results: list[EvalCaseResult] = Field(default_factory=list)
+
+
+class EvalComparisonMetricDelta(BaseModel):
+    baseline: float | int
+    candidate: float | int
+    delta: float | int
+
+
+class EvalComparisonCaseDelta(BaseModel):
+    case_id: str
+    newly_failed_checks: list[str] = Field(default_factory=list)
+    resolved_checks: list[str] = Field(default_factory=list)
+
+
+class EvalComparison(BaseModel):
+    baseline_label: str
+    candidate_label: str
+    metric_deltas: dict[str, EvalComparisonMetricDelta] = Field(default_factory=dict)
+    worsened_cases: list[EvalComparisonCaseDelta] = Field(default_factory=list)
+    improved_cases: list[EvalComparisonCaseDelta] = Field(default_factory=list)

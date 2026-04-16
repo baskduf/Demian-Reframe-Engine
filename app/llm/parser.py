@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from app.config.llm import OPENAI_MODEL_STRUCTURER
 from app.llm.client import OpenAIClientError, OpenAIResponsesClient
-from app.llm.contracts import LLMInvocationLog, LLMStructuredOutput
+from app.llm.contracts import ALLOWED_EMOTION_LABELS, LLMInvocationLog, LLMStructuredOutput
 from app.llm.prompts import PARSER_PROMPT_VERSION, PARSER_SYSTEM_PROMPT
 from app.schemas.models import StateEnum
 
@@ -48,7 +48,7 @@ STRUCTURED_OUTPUT_SCHEMA: dict[str, Any] = {
                 "type": "object",
                 "additionalProperties": False,
                 "properties": {
-                    "label": {"type": "string"},
+                    "label": {"type": "string", "enum": list(ALLOWED_EMOTION_LABELS)},
                     "intensity_hint": {"type": "integer"},
                     "confidence": {"type": "number"},
                     "evidence_span": {"type": "string"},
@@ -99,7 +99,25 @@ STRUCTURED_OUTPUT_SCHEMA: dict[str, Any] = {
         "missing_fields": {"type": "array", "items": {"type": "string"}},
         "confidence": {
             "type": "object",
-            "additionalProperties": {"type": "number"},
+            "additionalProperties": False,
+            "properties": {
+                "overall": {"type": "number"},
+                "situation": {"type": "number"},
+                "automatic_thought": {"type": "number"},
+                "emotion": {"type": "number"},
+                "behavior": {"type": "number"},
+                "distortion": {"type": "number"},
+                "risk": {"type": "number"},
+            },
+            "required": [
+                "overall",
+                "situation",
+                "automatic_thought",
+                "emotion",
+                "behavior",
+                "distortion",
+                "risk",
+            ],
         },
     },
     "required": [
@@ -129,6 +147,61 @@ def _contains_banned_terms(value: Any) -> bool:
     return False
 
 
+EMOTION_LABEL_ALIASES = {
+    "불안": "anxiety",
+    "긴장": "anxiety",
+    "초조": "anxiety",
+    "anxious": "anxiety",
+    "anxiety": "anxiety",
+    "fear": "fear",
+    "afraid": "fear",
+    "scared": "fear",
+    "무서움": "fear",
+    "겁": "fear",
+    "두려움": "fear",
+    "panic": "panic",
+    "panic attack": "panic",
+    "패닉": "panic",
+    "공황": "panic",
+    "shame": "shame",
+    "ashamed": "shame",
+    "embarrassed": "shame",
+    "부끄러움": "shame",
+    "창피": "shame",
+    "수치": "shame",
+    "sadness": "sadness",
+    "sad": "sadness",
+    "depressed": "sadness",
+    "슬픔": "sadness",
+    "우울": "sadness",
+    "despair": "despair",
+    "hopeless": "despair",
+    "절망": "despair",
+    "희망없음": "despair",
+}
+
+
+def _normalize_emotion_label(label: str) -> str:
+    normalized = label.strip().lower()
+    if normalized in ALLOWED_EMOTION_LABELS:
+        return normalized
+    for alias, canonical in EMOTION_LABEL_ALIASES.items():
+        if alias in normalized:
+            return canonical
+    return normalized
+
+
+def _normalize_structured_output(parsed: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(parsed)
+    normalized_emotions = []
+    for item in parsed.get("emotion_candidates", []):
+        candidate = dict(item)
+        candidate["label"] = _normalize_emotion_label(str(candidate.get("label", "")))
+        normalized_emotions.append(candidate)
+    normalized["emotion_candidates"] = normalized_emotions
+    return normalized
+
+
 class LLMParser:
     def __init__(self, client: OpenAIResponsesClient) -> None:
         self.client = client
@@ -147,6 +220,7 @@ class LLMParser:
                 schema_name="cbt_structured_output",
                 schema=STRUCTURED_OUTPUT_SCHEMA,
             )
+            parsed = _normalize_structured_output(parsed)
             if _contains_banned_terms(parsed):
                 raise OpenAIClientError("banned_content", "Structured output contained banned clinical language")
             output = LLMStructuredOutput.model_validate(parsed)

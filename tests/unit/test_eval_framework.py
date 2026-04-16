@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from eval.loader import load_eval_cases, load_eval_predictions
+from eval.loader import infer_manifest_path, load_dataset_manifest, load_eval_cases, load_eval_predictions
 from eval.scorer import aggregate_metrics, score_case
 
 
@@ -20,6 +20,12 @@ def test_eval_loader_reads_sample_predictions() -> None:
     predictions = load_eval_predictions(PREDICTIONS_PATH)
     assert len(predictions) >= 20
     assert predictions[0].case_id == "case-001"
+
+
+def test_eval_loader_reads_dataset_manifest() -> None:
+    manifest = load_dataset_manifest(infer_manifest_path(DATASET_PATH))
+    assert manifest.dataset_name == "sample_gad_gold"
+    assert manifest.case_count >= 20
 
 
 def test_eval_scoring_detects_complete_match() -> None:

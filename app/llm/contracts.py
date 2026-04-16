@@ -8,6 +8,15 @@ from pydantic import BaseModel, Field
 
 from app.schemas.models import StateEnum
 
+ALLOWED_EMOTION_LABELS = ("anxiety", "fear", "panic", "shame", "sadness", "despair")
+ALLOWED_RISK_FLAGS = (
+    "suicidal_intent",
+    "passive_death_wish",
+    "hopelessness",
+    "psychotic_expression",
+    "acute_deterioration",
+)
+
 
 class CandidateText(BaseModel):
     text: str

@@ -82,6 +82,7 @@ Live mode:
 
 - calls the configured OpenAI integration through the existing `LLMGateway`
 - only runs when `OPENAI_API_KEY` and `OPENAI_ENABLE_LIVE_EVAL=true` are both set
+- writes run-scoped outputs under a dedicated report directory so results can be compared over time
 
 ## Output Artifacts
 
@@ -91,7 +92,19 @@ Each evaluation run writes:
 - `case_results.json`
 - `report.md`
 
+Comparison runs write:
+
+- `comparison.json`
+- `comparison.md`
+
 These outputs are designed to support both machine-readable trend tracking and reviewer-friendly error inspection.
+
+## Live Eval Interpretation
+
+- A live run is an internal prompt and model regression tool, not product efficacy evidence.
+- `risk_false_negative_count` should be reviewed before any overall hit-rate trend.
+- `schema_valid_rate`, `fallback_rate`, and `banned_content_rate` should be monitored together because they reflect operational reliability, not just semantic quality.
+- When comparing runs, prioritize newly failed risk cases and newly increased fallback counts over small movement in non-safety hit-rate metrics.
 
 ## Initial Dataset Policy
 
