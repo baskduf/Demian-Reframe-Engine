@@ -66,10 +66,28 @@ Existing session APIs:
 - `GET /v1/protocols/{version}`
 - `GET /v1/audit/sessions/{session_id}`
 
+Typed event contract:
+
+- `eligibility` -> `is_adult`, `target_condition`
+- `situation` -> `situation_text`, `trigger_text`, optional `free_text`
+- `worry` -> `automatic_thought`, `worry_prediction`, optional `free_text`
+- `emotion` -> `emotions`, optional `body_symptoms`, optional `safety_behaviors`, optional `free_text`
+- `distortion` -> `selected_distortion_ids`
+- `evidence_for` -> `evidence_for`
+- `evidence_against` -> `evidence_against`
+- `alternative` -> `balanced_view`, `coping_statement`
+- `rerate` -> `re_rated_anxiety`, `experiment_required`
+- `experiment` -> `action`, `timebox`, optional `hypothesis`
+- `summary` -> `summary_ack`
+
+The wire shape remains `{ "event_type": "...", "payload": { ... } }`, but payloads are now validated against state-specific models internally.
+
 LLM preview/debug APIs:
 
 - `POST /v1/llm/parse-preview`
 - `POST /v1/llm/render-preview`
+- `GET /v1/health/llm`
+- `POST /v1/llm/live-check`
 
 ## LLM Safety Boundary
 
@@ -117,8 +135,15 @@ Optional environment variables:
 - `OPENAI_BASE_URL`
 - `OPENAI_TIMEOUT_SECONDS`
 - `LLM_CONFIDENCE_THRESHOLD`
+- `OPENAI_ENABLE_LIVE_TESTS`
+- `OPENAI_ENABLE_LIVE_EVAL`
 
 If `OPENAI_API_KEY` is not set, the engine falls back to deterministic behavior and template-based rendering where applicable.
+
+LLM diagnostics:
+
+- `GET /v1/health/llm`: reports whether the app is configured for live OpenAI calls
+- `POST /v1/llm/live-check`: performs a short structured-output verification call without creating a therapy session
 
 ## Testing
 
@@ -126,6 +151,14 @@ Run the full suite:
 
 ```bash
 python -m pytest -q
+```
+
+Run live OpenAI integration tests only when you explicitly enable them:
+
+```bash
+$env:OPENAI_API_KEY="your-key"
+$env:OPENAI_ENABLE_LIVE_TESTS="true"
+python -m pytest -q -m live
 ```
 
 Current coverage includes:
@@ -136,12 +169,38 @@ Current coverage includes:
 - API contracts
 - audit logging
 - LLM integration behavior with mocks
+- optional live OpenAI verification when enabled
+
+## Model Evaluation
+
+Static sample evaluation:
+
+```bash
+python -m eval.run_eval --mode static
+```
+
+Live evaluation against the configured OpenAI integration:
+
+```bash
+$env:OPENAI_API_KEY="your-key"
+$env:OPENAI_ENABLE_LIVE_EVAL="true"
+python -m eval.run_eval --mode live
+```
+
+Evaluation artifacts are written to `eval/reports/`:
+
+- `summary.json`
+- `case_results.json`
+- `report.md`
+
+The sample evaluation set is intentionally small and is meant for parser/prompt iteration, not for clinical benchmarking.
 
 ## Design Docs
 
 - [Engine Spec](docs/engine_spec.md)
 - [Rule Catalog](docs/rule_catalog.md)
 - [Validation Plan](docs/validation_plan.md)
+- [Model Eval Plan](docs/model_eval_plan.md)
 
 ## Regulatory-Friendly Design Notes
 

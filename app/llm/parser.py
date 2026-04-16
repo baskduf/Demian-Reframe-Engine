@@ -178,6 +178,6 @@ class LLMParser:
                 raw_response=str(exc),
                 parsed_output=fallback.model_dump(),
                 succeeded=False,
-                error_code=getattr(exc, "code", "parse_failed"),
+                error_code="schema_validation_failed" if isinstance(exc, ValidationError) else getattr(exc, "code", "parse_failed"),
             )
             return fallback, log

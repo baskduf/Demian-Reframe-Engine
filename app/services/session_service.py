@@ -6,14 +6,24 @@ from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
+from pydantic import ValidationError
 
 from app.config.versions import PROTOCOL_MANIFEST
 from app.domain.distortions import detect_distortions
 from app.domain.risk import evaluate_risk
 from app.domain.state_machine import allowed_actions, has_required_fields, next_state
 from app.domain.templates import PROMPT_BY_STATE, render_template
-from app.llm.contracts import LLMParsePreviewRequest, LLMParsePreviewResponse, LLMRenderPreviewResponse, LLMRenderRequest
+from app.llm.contracts import (
+    LLMHealthResponse,
+    LLMLiveCheckRequest,
+    LLMLiveCheckResponse,
+    LLMParsePreviewRequest,
+    LLMParsePreviewResponse,
+    LLMRenderPreviewResponse,
+    LLMRenderRequest,
+)
 from app.persistence.sqlite import SQLiteRepository
+from app.schemas.events import PAYLOAD_MODEL_BY_EVENT, EventTypeEnum, expected_event_type_for_state
 from app.schemas.models import (
     ArtifactsResponse,
     AuditResponse,
@@ -68,6 +78,40 @@ class SessionService:
             self.repository.save_thought_record(record)
         return record
 
+    @staticmethod
+    def _invalid_fields_from_error(exc: ValidationError) -> list[str]:
+        fields: list[str] = []
+        for error in exc.errors():
+            if not error.get("loc"):
+                continue
+            field = str(error["loc"][0])
+            if field not in fields:
+                fields.append(field)
+        return fields
+
+    def _validate_event_payload(self, state: StateEnum, event_type: str, payload: dict) -> tuple[dict, dict]:
+        expected_event_type = expected_event_type_for_state(state)
+        if expected_event_type is None:
+            return payload, {}
+
+        try:
+            parsed_event_type = EventTypeEnum(event_type)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=f"unsupported event_type {event_type}") from exc
+
+        if parsed_event_type != expected_event_type:
+            raise HTTPException(
+                status_code=400,
+                detail=f"event_type {parsed_event_type.value} is not allowed in state {state.value}",
+            )
+
+        payload_model = PAYLOAD_MODEL_BY_EVENT[parsed_event_type]
+        try:
+            validated = payload_model.model_validate(payload)
+        except ValidationError as exc:
+            return payload, {"invalid_fields": self._invalid_fields_from_error(exc)}
+        return validated.model_dump(exclude_none=True), {}
+
     def _transition(self, session: Session, to_state: StateEnum, payload: dict, matched_rule_ids: list[str], template_ids: list[str]) -> TransitionLog:
         transition = TransitionLog(
             session_id=session.session_id,
@@ -90,6 +134,7 @@ class SessionService:
     def _build_envelope(self, session: Session, trace_id=None, state_data=None, template_id=None) -> SessionEnvelope:
         template_key = template_id or PROMPT_BY_STATE.get(session.current_state, "summary.complete")
         template_response = render_template(template_key)
+        merged_state_data = dict(state_data or {})
         if self.llm_gateway.enabled:
             rendered, invocation = self.llm_gateway.render_text(
                 session_id=session.session_id,
@@ -99,12 +144,15 @@ class SessionService:
             )
             self.repository.add_llm_invocation(invocation)
             template_response.message = rendered.rendered_text
+            if rendered.fallback_used:
+                merged_state_data["llm_fallback_used"] = True
+                merged_state_data["llm_error_code"] = invocation.error_code
         return SessionEnvelope(
             session=session,
             current_state=session.current_state,
             allowed_actions=allowed_actions(session.current_state),
             transition_trace_id=trace_id,
-            state_data=state_data or {},
+            state_data=merged_state_data,
             template_response=template_response,
         )
 
@@ -184,6 +232,12 @@ class SessionService:
             "llm_structured_output": structured_output.model_dump(),
             "llm_risk_flags": [flag.model_dump() for flag in risk_flags],
         }
+        if not parse_log.succeeded:
+            state_data["llm_fallback_used"] = True
+            state_data["llm_error_code"] = parse_log.error_code
+        elif not risk_log.succeeded:
+            state_data["llm_fallback_used"] = True
+            state_data["llm_error_code"] = risk_log.error_code
         return enriched_payload, state_data
 
     def create_session(self, request: CreateSessionRequest) -> SessionEnvelope:
@@ -236,8 +290,12 @@ class SessionService:
         self.repository.add_event(SessionEvent(session_id=session_id, state_before=session.current_state, event_type=request.event_type, payload=request.payload))
         state = session.current_state
         payload, llm_state_data = self._apply_llm_structuring(session, record, request.payload)
+        payload, validation_state_data = self._validate_event_payload(state, request.event_type, payload)
+        llm_state_data = {**llm_state_data, **validation_state_data}
 
         if state == StateEnum.ELIGIBILITY_CHECK:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.situation")
             if not payload.get("is_adult", False) or payload.get("target_condition") != "gad":
                 session.status = SessionStatus.CLOSED
                 session.closed_reason = "out_of_scope"
@@ -248,6 +306,8 @@ class SessionService:
             return self._build_envelope(session, trace.transition_id)
 
         if state == StateEnum.SITUATION_CAPTURE:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.situation")
             if not has_required_fields(state, payload):
                 return self._build_envelope(
                     session,
@@ -264,6 +324,8 @@ class SessionService:
             return self._build_envelope(session, trace.transition_id)
 
         if state == StateEnum.WORRY_THOUGHT_CAPTURE:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.worry")
             if not has_required_fields(state, payload):
                 return self._build_envelope(
                     session,
@@ -280,6 +342,8 @@ class SessionService:
             return self._build_envelope(session, trace.transition_id)
 
         if state == StateEnum.EMOTION_BODY_BEHAVIOR_CAPTURE:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.emotion")
             if not has_required_fields(state, payload):
                 return self._build_envelope(
                     session,
@@ -308,6 +372,8 @@ class SessionService:
             )
 
         if state == StateEnum.DISTORTION_HYPOTHESIS:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.distortion")
             selected = payload.get("selected_distortion_ids") or [candidate.distortion_id for candidate in record.candidate_distortions[:1]]
             record.selected_distortion_ids = selected
             self.repository.save_thought_record(record)
@@ -315,6 +381,8 @@ class SessionService:
             return self._build_envelope(session, trace.transition_id, {"selected_distortion_ids": selected})
 
         if state == StateEnum.EVIDENCE_FOR:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.evidence_for")
             if not has_required_fields(state, payload):
                 return self._build_envelope(session, state_data={"missing_fields": ["evidence_for"]}, template_id="prompt.evidence_for")
             record.evidence_for = payload["evidence_for"]
@@ -323,6 +391,8 @@ class SessionService:
             return self._build_envelope(session, trace.transition_id)
 
         if state == StateEnum.EVIDENCE_AGAINST:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.evidence_against")
             if not has_required_fields(state, payload):
                 return self._build_envelope(session, state_data={"missing_fields": ["evidence_against"]}, template_id="prompt.evidence_against")
             record.evidence_against = payload["evidence_against"]
@@ -331,6 +401,8 @@ class SessionService:
             return self._build_envelope(session, trace.transition_id)
 
         if state == StateEnum.ALTERNATIVE_THOUGHT:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.alternative")
             if not has_required_fields(state, payload):
                 return self._build_envelope(session, state_data={"missing_fields": ["balanced_view", "coping_statement"]}, template_id="prompt.alternative")
             record.alternative_thought = f"A more balanced view is: {payload['balanced_view']}. A workable next response is: {payload['coping_statement']}."
@@ -339,6 +411,8 @@ class SessionService:
             return self._build_envelope(session, trace.transition_id, {"alternative_thought": record.alternative_thought})
 
         if state == StateEnum.RE_RATE_ANXIETY:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.re_rate")
             if not has_required_fields(state, payload):
                 return self._build_envelope(session, state_data={"missing_fields": ["re_rated_anxiety", "experiment_required"]}, template_id="prompt.re_rate")
             record.re_rated_anxiety = payload["re_rated_anxiety"]
@@ -350,6 +424,8 @@ class SessionService:
             return self._build_envelope(session, trace.transition_id)
 
         if state == StateEnum.BEHAVIOR_EXPERIMENT:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.experiment")
             if not has_required_fields(state, payload):
                 return self._build_envelope(session, state_data={"missing_fields": ["action", "timebox"]}, template_id="prompt.experiment")
             record.behavior_experiment = BehaviorExperiment(action=payload["action"], timebox=payload["timebox"], hypothesis=payload.get("hypothesis"))
@@ -358,6 +434,8 @@ class SessionService:
             return self._build_envelope(session, trace.transition_id)
 
         if state == StateEnum.SUMMARY_PLAN:
+            if "invalid_fields" in validation_state_data:
+                return self._build_envelope(session, state_data=llm_state_data, template_id="summary.complete")
             if not has_required_fields(state, payload):
                 return self._build_envelope(session, state_data={"missing_fields": ["summary_ack"]}, template_id="summary.complete")
             trace = self._transition(session, next_state(state), payload, ["summary_ack"], ["summary.complete"])
@@ -399,3 +477,9 @@ class SessionService:
 
     def render_preview(self, request: LLMRenderRequest) -> LLMRenderPreviewResponse:
         return self.llm_gateway.render_preview(request)
+
+    def get_llm_health(self) -> LLMHealthResponse:
+        return self.llm_gateway.health()
+
+    def live_check(self, request: LLMLiveCheckRequest) -> LLMLiveCheckResponse:
+        return self.llm_gateway.live_check(request)

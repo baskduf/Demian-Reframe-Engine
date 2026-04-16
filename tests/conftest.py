@@ -11,7 +11,9 @@ from app.llm.contracts import (
     CandidateEmotion,
     CandidateRiskFlag,
     CandidateText,
+    LLMHealthResponse,
     LLMInvocationLog,
+    LLMLiveCheckResponse,
     LLMRenderResponse,
     LLMStructuredOutput,
 )
@@ -107,6 +109,151 @@ class FakeLLMGateway:
 
         return LLMRenderPreviewResponse(rendered_text=rendered.rendered_text, fallback_used=rendered.fallback_used, invocation=invocation)
 
+    def health(self):
+        return LLMHealthResponse(
+            enabled=True,
+            api_key_configured=True,
+            models_configured=True,
+            live_call_available=True,
+            live_test_enabled=False,
+            base_url="https://example.test",
+            structurer_model="fake-structurer",
+            renderer_model="fake-renderer",
+            risk_assist_model="fake-risk",
+        )
+
+    def live_check(self, request):
+        return LLMLiveCheckResponse(
+            ok=True,
+            enabled=True,
+            model_name="fake-structurer",
+            prompt_version="parser-test",
+            latency_ms=5.0,
+            schema_valid=True,
+            error_code=None,
+            fallback_used=False,
+        )
+
+
+class DisabledLLMGateway:
+    @property
+    def enabled(self) -> bool:
+        return False
+
+    def parse_structured(self, *, session_id, state, free_text: str):
+        output = LLMStructuredOutput(needs_clarification=True, missing_fields=["manual_structuring_required"])
+        log = LLMInvocationLog(
+            invocation_id=uuid4(),
+            session_id=session_id,
+            state=state,
+            task_type="parse_structured",
+            model_name="disabled",
+            model_version="disabled",
+            prompt_version="parser-disabled",
+            request_hash="req-disabled",
+            response_hash="res-disabled",
+            raw_response="disabled",
+            parsed_output=output.model_dump(),
+            succeeded=False,
+            error_code="llm_disabled",
+        )
+        return output, log
+
+    def assist_risk(self, *, session_id, state, free_text: str):
+        log = LLMInvocationLog(
+            invocation_id=uuid4(),
+            session_id=session_id,
+            state=state,
+            task_type="risk_assist",
+            model_name="disabled",
+            model_version="disabled",
+            prompt_version="risk-disabled",
+            request_hash="req-disabled",
+            response_hash="res-disabled",
+            raw_response="disabled",
+            parsed_output={"risk_flags": []},
+            succeeded=False,
+            error_code="llm_disabled",
+        )
+        return [], log
+
+    def render_text(self, *, session_id, state, template_id: str, source_text: str):
+        rendered = LLMRenderResponse(rendered_text=source_text, fallback_used=True)
+        log = LLMInvocationLog(
+            invocation_id=uuid4(),
+            session_id=session_id,
+            state=state,
+            task_type="render_text",
+            model_name="disabled",
+            model_version="disabled",
+            prompt_version="renderer-disabled",
+            request_hash="req-disabled",
+            response_hash="res-disabled",
+            raw_response="disabled",
+            parsed_output=rendered.model_dump(),
+            succeeded=False,
+            error_code="llm_disabled",
+        )
+        return rendered, log
+
+    def parse_preview(self, request):
+        output, invocation = self.parse_structured(session_id=None, state=request.state, free_text=request.free_text)
+        from app.llm.contracts import LLMParsePreviewResponse
+
+        return LLMParsePreviewResponse(structured_output=output, fallback_used=True, invocation=invocation)
+
+    def render_preview(self, request):
+        rendered, invocation = self.render_text(session_id=None, state=None, template_id=request.template_id, source_text=request.source_text)
+        from app.llm.contracts import LLMRenderPreviewResponse
+
+        return LLMRenderPreviewResponse(rendered_text=rendered.rendered_text, fallback_used=True, invocation=invocation)
+
+    def health(self):
+        return LLMHealthResponse(
+            enabled=False,
+            api_key_configured=False,
+            models_configured=True,
+            live_call_available=False,
+            live_test_enabled=False,
+            base_url="https://api.openai.com/v1",
+            structurer_model="disabled",
+            renderer_model="disabled",
+            risk_assist_model="disabled",
+        )
+
+    def live_check(self, request):
+        return LLMLiveCheckResponse(
+            ok=False,
+            enabled=False,
+            model_name="disabled",
+            prompt_version="parser-disabled",
+            latency_ms=0.0,
+            schema_valid=False,
+            error_code="llm_disabled",
+            fallback_used=True,
+        )
+
+
+class FailingLLMGateway(FakeLLMGateway):
+    def parse_structured(self, *, session_id, state, free_text: str):
+        output = LLMStructuredOutput(needs_clarification=True, missing_fields=["manual_structuring_required"])
+        log = LLMInvocationLog(
+            invocation_id=uuid4(),
+            session_id=session_id,
+            state=state,
+            task_type="parse_structured",
+            model_name="failing",
+            model_version="failing",
+            prompt_version="parser-failing",
+            request_hash="req-timeout",
+            response_hash="res-timeout",
+            raw_response="timeout",
+            parsed_output=output.model_dump(),
+            succeeded=False,
+            error_code="timeout",
+        )
+        return output, log
+
 
 @pytest.fixture()
 def client(tmp_path: Path) -> TestClient:
@@ -117,4 +264,16 @@ def client(tmp_path: Path) -> TestClient:
 @pytest.fixture()
 def mock_client(tmp_path: Path) -> TestClient:
     app = create_app(str(tmp_path / "test-llm.sqlite3"), llm_gateway=FakeLLMGateway())
+    return TestClient(app)
+
+
+@pytest.fixture()
+def disabled_llm_client(tmp_path: Path) -> TestClient:
+    app = create_app(str(tmp_path / "test-disabled.sqlite3"), llm_gateway=DisabledLLMGateway())
+    return TestClient(app)
+
+
+@pytest.fixture()
+def failing_llm_client(tmp_path: Path) -> TestClient:
+    app = create_app(str(tmp_path / "test-failing.sqlite3"), llm_gateway=FailingLLMGateway())
     return TestClient(app)

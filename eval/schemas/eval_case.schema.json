@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvalCase",
+  "type": "object",
+  "required": ["case_id", "state", "free_text", "gold"],
+  "properties": {
+    "case_id": { "type": "string" },
+    "state": { "type": "string" },
+    "language": { "type": "string" },
+    "free_text": { "type": "string" },
+    "gold": {
+      "type": "object"
+    }
+  }
+}

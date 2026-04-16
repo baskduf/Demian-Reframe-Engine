@@ -74,6 +74,34 @@ class LLMRenderPreviewResponse(BaseModel):
     invocation: "LLMInvocationLog"
 
 
+class LLMHealthResponse(BaseModel):
+    enabled: bool
+    api_key_configured: bool
+    models_configured: bool
+    live_call_available: bool
+    live_test_enabled: bool
+    base_url: str
+    structurer_model: str
+    renderer_model: str
+    risk_assist_model: str
+
+
+class LLMLiveCheckRequest(BaseModel):
+    free_text: str = "회의 전에 발표가 망할까 불안하다."
+    state: StateEnum = StateEnum.SITUATION_CAPTURE
+
+
+class LLMLiveCheckResponse(BaseModel):
+    ok: bool
+    enabled: bool
+    model_name: str
+    prompt_version: str
+    latency_ms: float
+    schema_valid: bool
+    error_code: str | None = None
+    fallback_used: bool = False
+
+
 class LLMInvocationLog(BaseModel):
     invocation_id: UUID = Field(default_factory=uuid4)
     session_id: UUID | None = None

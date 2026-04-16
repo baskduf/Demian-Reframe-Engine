@@ -21,3 +21,43 @@ def test_high_risk_mid_session_interrupts_flow(client) -> None:
     )
     assert response.status_code == 200
     assert response.json()["current_state"] == "crisis"
+
+
+def test_wrong_type_input_keeps_state_and_reports_invalid_fields(client) -> None:
+    create = client.post("/v1/sessions", json={"user_id": "user-1"}).json()
+    session_id = create["session"]["session_id"]
+    client.post(f"/v1/sessions/{session_id}/risk-screen", json={})
+    client.post(f"/v1/sessions/{session_id}/events", json={"event_type": "eligibility", "payload": {"is_adult": True, "target_condition": "gad"}})
+    client.post(f"/v1/sessions/{session_id}/events", json={"event_type": "situation", "payload": {"situation_text": "회의 전", "trigger_text": "실수"}})
+    client.post(f"/v1/sessions/{session_id}/events", json={"event_type": "worry", "payload": {"automatic_thought": "망할 거야", "worry_prediction": "분명 잘못될 거야"}})
+    client.post(
+        f"/v1/sessions/{session_id}/events",
+        json={"event_type": "emotion", "payload": {"emotions": [{"label": "anxiety", "intensity": 80}], "body_symptoms": ["두근거림"]}},
+    )
+    client.post(f"/v1/sessions/{session_id}/events", json={"event_type": "distortion", "payload": {"selected_distortion_ids": ["fortune_telling"]}})
+    client.post(f"/v1/sessions/{session_id}/events", json={"event_type": "evidence_for", "payload": {"evidence_for": ["지난번 실수"]}})
+    client.post(f"/v1/sessions/{session_id}/events", json={"event_type": "evidence_against", "payload": {"evidence_against": ["준비했다"]}})
+    client.post(
+        f"/v1/sessions/{session_id}/events",
+        json={"event_type": "alternative", "payload": {"balanced_view": "실수해도 끝은 아니다", "coping_statement": "핵심부터 말하자"}},
+    )
+    response = client.post(
+        f"/v1/sessions/{session_id}/events",
+        json={"event_type": "rerate", "payload": {"re_rated_anxiety": "high", "experiment_required": False}},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["current_state"] == "re_rate_anxiety"
+    assert "re_rated_anxiety" in body["state_data"]["invalid_fields"]
+
+
+def test_wrong_event_type_for_state_returns_400(client) -> None:
+    create = client.post("/v1/sessions", json={"user_id": "user-1"}).json()
+    session_id = create["session"]["session_id"]
+    client.post(f"/v1/sessions/{session_id}/risk-screen", json={})
+    client.post(f"/v1/sessions/{session_id}/events", json={"event_type": "eligibility", "payload": {"is_adult": True, "target_condition": "gad"}})
+    response = client.post(
+        f"/v1/sessions/{session_id}/events",
+        json={"event_type": "summary", "payload": {"summary_ack": True}},
+    )
+    assert response.status_code == 400

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from json import JSONDecodeError
 from typing import Any
 
 import httpx
@@ -13,6 +14,13 @@ class OpenAIClientError(Exception):
     def __init__(self, code: str, message: str) -> None:
         super().__init__(message)
         self.code = code
+
+
+ERROR_LLM_DISABLED = "llm_disabled"
+ERROR_TIMEOUT = "timeout"
+ERROR_HTTP = "http_error"
+ERROR_INVALID_JSON = "invalid_json"
+ERROR_MISSING_OUTPUT = "missing_output_text"
 
 
 class OpenAIResponsesClient:
@@ -31,7 +39,7 @@ class OpenAIResponsesClient:
 
     def request_json(self, *, model: str, system_prompt: str, user_prompt: str, schema_name: str, schema: dict[str, Any]) -> tuple[str, dict[str, Any]]:
         if not self.enabled:
-            raise OpenAIClientError("llm_disabled", "OPENAI_API_KEY is not configured")
+            raise OpenAIClientError(ERROR_LLM_DISABLED, "OPENAI_API_KEY is not configured")
 
         payload = {
             "model": model,
@@ -61,17 +69,20 @@ class OpenAIResponsesClient:
             )
             response.raise_for_status()
         except httpx.TimeoutException as exc:
-            raise OpenAIClientError("timeout", str(exc)) from exc
+            raise OpenAIClientError(ERROR_TIMEOUT, str(exc)) from exc
         except httpx.HTTPError as exc:
-            raise OpenAIClientError("http_error", str(exc)) from exc
+            raise OpenAIClientError(ERROR_HTTP, str(exc)) from exc
 
         raw_body = response.text
-        body = response.json()
+        try:
+            body = response.json()
+        except (JSONDecodeError, ValueError) as exc:
+            raise OpenAIClientError(ERROR_INVALID_JSON, str(exc)) from exc
         text_output = self._extract_output_text(body)
         try:
             parsed = json.loads(text_output)
         except json.JSONDecodeError as exc:
-            raise OpenAIClientError("invalid_json", str(exc)) from exc
+            raise OpenAIClientError(ERROR_INVALID_JSON, str(exc)) from exc
         return raw_body, parsed
 
     @staticmethod
@@ -82,4 +93,4 @@ class OpenAIResponsesClient:
                     return content["text"]
         if isinstance(body.get("output_text"), str) and body["output_text"]:
             return body["output_text"]
-        raise OpenAIClientError("missing_output_text", "No output_text found in Responses API payload")
+        raise OpenAIClientError(ERROR_MISSING_OUTPUT, "No output_text found in Responses API payload")

@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter
 
-from app.llm.contracts import LLMParsePreviewRequest, LLMParsePreviewResponse, LLMRenderPreviewResponse
+from app.llm.contracts import LLMHealthResponse, LLMLiveCheckRequest, LLMLiveCheckResponse, LLMParsePreviewRequest, LLMParsePreviewResponse, LLMRenderPreviewResponse
 from app.schemas.models import ArtifactsResponse, AuditResponse, CreateSessionRequest, EventRequest, ProtocolManifest, RiskScreenRequest, SessionEnvelope
 from app.llm.contracts import LLMRenderRequest
 from app.services.session_service import SessionService
@@ -52,5 +52,13 @@ def build_router(service: SessionService) -> APIRouter:
     @router.post("/llm/render-preview", response_model=LLMRenderPreviewResponse)
     def render_preview(request: LLMRenderRequest) -> LLMRenderPreviewResponse:
         return service.render_preview(request)
+
+    @router.get("/health/llm", response_model=LLMHealthResponse)
+    def get_llm_health() -> LLMHealthResponse:
+        return service.get_llm_health()
+
+    @router.post("/llm/live-check", response_model=LLMLiveCheckResponse)
+    def llm_live_check(request: LLMLiveCheckRequest) -> LLMLiveCheckResponse:
+        return service.live_check(request)
 
     return router

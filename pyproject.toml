@@ -25,3 +25,6 @@ include = ["app*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "live: marks tests that hit the real OpenAI API and are skipped unless explicitly enabled",
+]
