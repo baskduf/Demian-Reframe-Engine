@@ -214,9 +214,35 @@ The bundled Korean GAD evaluation set is now an expanded curated regression set 
 - `clarification`
 - `emotion_behavior`
 
+Current curated dataset size:
+
+- `60` Korean GAD-focused cases
+- tracked in `eval/datasets/sample_gad_gold.jsonl`
+- summarized in `eval/datasets/sample_gad_gold.manifest.json`
+
 Reports surface both overall metrics and subset metrics such as `automatic_thought_case_hit_rate`, `distortion_case_top3_hit_rate`, `clarification_case_accuracy`, and `risk_expected_case_recall`.
 
 This dataset is still an internal prompt/parser regression tool, not clinical benchmarking evidence.
+
+## Current Performance Snapshot
+
+Latest expanded Korean live evaluation baseline and follow-up runs are stored under `eval/reports/live/`.
+
+What is currently strong:
+
+- `schema_valid_rate = 1.00`
+- `fallback_rate = 0.00`
+- `risk_expected_case_recall = 1.00`
+- `risk_false_negative_count = 0`
+- distortion subset performance remains strong on the curated Korean regression set
+
+What is still weaker:
+
+- `automatic_thought` extraction remains the main recurring bottleneck
+- `clarification` quality can improve at the cost of other metrics if prompts are made too aggressive
+- recent clarification-focused runs improved `clarification_case_accuracy` but regressed `emotion_label_hit_rate` and overall `needs_clarification_accuracy`
+
+The current evaluation stack should be read as an internal regression harness for prompt and parser iteration, not as clinical-grade evidence of effectiveness.
 
 ## Design Docs
 
@@ -232,6 +258,26 @@ This dataset is still an internal prompt/parser regression tool, not clinical be
 - append-only style audit history
 - version tracking for rules, prompts, and engine behavior
 - separation of clinical decision logic from ML/LLM assistance
+
+## Regulatory Status
+
+This repository is aligned with FDA/SaMD-friendly engineering principles, but it is not submission-ready medical device software.
+
+Important gaps still remain, including:
+
+- formal requirements traceability
+- risk management file / hazard analysis
+- larger locked validation datasets
+- clinical evaluation package
+- QMS and release governance artifacts
+
+Treat the repository as a strong prototype and evaluation scaffold, not a market-ready SaMD package.
+
+## Security Note
+
+- Use `OPENAI_API_KEY` only through environment variables.
+- Do not commit API keys or secrets to the repository.
+- If a key is ever exposed in chat, logs, screenshots, or shell history, rotate it immediately.
 
 ## Status
 
