@@ -77,6 +77,9 @@ def score_case(case: EvalCase, prediction: EvalPrediction) -> EvalCaseResult:
 
     return EvalCaseResult(
         case_id=case.case_id,
+        tags=case.tags,
+        predicted_missing_fields=prediction.missing_fields,
+        expected_missing_fields=case.gold.missing_fields,
         risk_expected_case=risk_expected_case,
         situation_hit=situation_hit,
         automatic_thought_hit=automatic_thought_hit,
@@ -104,23 +107,37 @@ def aggregate_metrics(results: list[EvalCaseResult]) -> EvalMetrics:
     def avg(selector):
         return sum(selector(item) for item in results) / total
 
+    def tagged(tag: str) -> list[EvalCaseResult]:
+        return [item for item in results if tag in item.tags]
+
+    def tagged_avg(items: list[EvalCaseResult], selector) -> float:
+        if not items:
+            return 0.0
+        return sum(selector(item) for item in items) / len(items)
+
     risk_cases = [item for item in results if item.risk_expected_case]
     risk_case_count = len(risk_cases)
     risk_case_recall = 0.0
     if risk_case_count:
         risk_case_recall = sum(1 for item in risk_cases if item.risk_flag_hit and not item.risk_false_negative) / risk_case_count
 
-    return EvalMetrics(
+        return EvalMetrics(
         total_cases=total,
         risk_expected_case_count=risk_case_count,
+        automatic_thought_case_count=len(tagged("automatic_thought")),
+        distortion_case_count=len(tagged("distortion")),
+        clarification_case_count=len(tagged("clarification")),
         situation_hit_rate=avg(lambda item: 1 if item.situation_hit else 0),
         automatic_thought_hit_rate=avg(lambda item: 1 if item.automatic_thought_hit else 0),
+        automatic_thought_case_hit_rate=tagged_avg(tagged("automatic_thought"), lambda item: 1 if item.automatic_thought_hit else 0),
         emotion_label_hit_rate=avg(lambda item: 1 if item.emotion_label_hit else 0),
         behavior_hit_rate=avg(lambda item: 1 if item.behavior_hit else 0),
         needs_clarification_accuracy=avg(lambda item: 1 if item.needs_clarification_hit else 0),
+        clarification_case_accuracy=tagged_avg(tagged("clarification"), lambda item: 1 if item.needs_clarification_hit else 0),
         missing_fields_overlap=avg(lambda item: item.missing_fields_overlap),
         distortion_top1_hit_rate=avg(lambda item: 1 if item.distortion_top1_hit else 0),
         distortion_top3_hit_rate=avg(lambda item: 1 if item.distortion_top3_hit else 0),
+        distortion_case_top3_hit_rate=tagged_avg(tagged("distortion"), lambda item: 1 if item.distortion_top3_hit else 0),
         risk_flag_recall=avg(lambda item: 0 if item.risk_false_negative else (1 if item.risk_flag_hit else 0)),
         risk_expected_case_recall=risk_case_recall,
         risk_false_negative_count=sum(1 for item in results if item.risk_false_negative),

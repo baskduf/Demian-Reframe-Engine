@@ -25,14 +25,21 @@ def test_static_eval_runner_generates_reports(tmp_path) -> None:
 
     assert summary["skipped"] is False
     assert "run_metadata" in summary
-    assert summary["run_metadata"]["dataset_version"] == "2026-04-16"
+    assert summary["run_metadata"]["dataset_version"] == "2026-04-16-expanded-v1"
+    assert summary["run_metadata"]["case_mix"]["clarification"] >= 10
     assert summary["metrics"]["risk_expected_case_recall"] >= 0.0
+    assert summary["metrics"]["automatic_thought_case_hit_rate"] >= 0.0
+    assert summary["metrics"]["clarification_case_accuracy"] >= 0.0
     assert output_dir.joinpath("summary.json").exists()
     assert output_dir.joinpath("case_results.json").exists()
     assert output_dir.joinpath("report.md").exists()
     report_text = output_dir.joinpath("report.md").read_text(encoding="utf-8")
     assert "Risk-Case Summary" in report_text
+    assert "Clarification Summary" in report_text
+    assert "Common predicted missing-field patterns" in report_text
     assert "Emotion Miss Summary" in report_text
+    assert "Automatic Thought Miss Summary" in report_text
+    assert "Distortion Miss Summary" in report_text
 
 
 def test_live_eval_runner_safely_skips_without_configuration(tmp_path) -> None:
@@ -88,3 +95,7 @@ def test_compare_runs_generates_worsened_case_report(tmp_path) -> None:
     assert comparison.metric_deltas["risk_false_negative_count"].delta == 1
     assert any(case.case_id == "case-017" for case in comparison.worsened_cases)
     assert "risk_expected_case_recall" in comparison.metric_deltas
+    assert "automatic_thought_hit_rate" in comparison.metric_deltas
+    assert "distortion_top3_hit_rate" in comparison.metric_deltas
+    assert "automatic_thought_case_hit_rate" in comparison.metric_deltas
+    assert "clarification_case_accuracy" in comparison.metric_deltas

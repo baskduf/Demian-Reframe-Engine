@@ -175,6 +175,9 @@ class SessionService:
         record.llm_automatic_thought_candidates = [
             LLMTextCandidate.model_validate(item.model_dump()) for item in structured_output.automatic_thought_candidates
         ]
+        record.llm_worry_prediction_candidates = [
+            LLMTextCandidate.model_validate(item.model_dump()) for item in structured_output.worry_prediction_candidates
+        ]
         record.llm_emotion_candidates = [LLMEmotionCandidate.model_validate(item.model_dump()) for item in structured_output.emotion_candidates]
         record.llm_behavior_candidates = [LLMTextCandidate.model_validate(item.model_dump()) for item in structured_output.behavior_candidates]
         record.llm_distortion_candidates = [
@@ -215,6 +218,11 @@ class SessionService:
                 structured_output.automatic_thought_candidates[0].confidence
             ):
                 enriched_payload["automatic_thought"] = structured_output.automatic_thought_candidates[0].text
+        if session.current_state == StateEnum.WORRY_THOUGHT_CAPTURE and "worry_prediction" not in enriched_payload:
+            if structured_output.worry_prediction_candidates and self._candidate_above_threshold(
+                structured_output.worry_prediction_candidates[0].confidence
+            ):
+                enriched_payload["worry_prediction"] = structured_output.worry_prediction_candidates[0].text
 
         if session.current_state == StateEnum.EMOTION_BODY_BEHAVIOR_CAPTURE:
             if "emotions" not in enriched_payload and structured_output.emotion_candidates:

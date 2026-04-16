@@ -12,20 +12,22 @@ PREDICTIONS_PATH = Path("eval/datasets/sample_predictions.jsonl")
 
 def test_eval_loader_reads_sample_dataset() -> None:
     cases = load_eval_cases(DATASET_PATH)
-    assert len(cases) >= 20
+    assert len(cases) >= 60
     assert cases[0].case_id == "case-001"
 
 
 def test_eval_loader_reads_sample_predictions() -> None:
     predictions = load_eval_predictions(PREDICTIONS_PATH)
-    assert len(predictions) >= 20
+    assert len(predictions) >= 60
     assert predictions[0].case_id == "case-001"
 
 
 def test_eval_loader_reads_dataset_manifest() -> None:
     manifest = load_dataset_manifest(infer_manifest_path(DATASET_PATH))
     assert manifest.dataset_name == "sample_gad_gold"
-    assert manifest.case_count >= 20
+    assert manifest.case_count >= 60
+    assert manifest.case_mix["automatic_thought"] >= 15
+    assert manifest.case_mix["risk"] >= 10
 
 
 def test_eval_scoring_detects_complete_match() -> None:
@@ -50,3 +52,6 @@ def test_eval_metrics_are_deterministic() -> None:
     assert first_metrics.model_dump() == second_metrics.model_dump()
     assert first_metrics.total_cases == len(cases)
     assert first_metrics.risk_false_negative_count == 0
+    assert first_metrics.automatic_thought_case_hit_rate >= 0.0
+    assert first_metrics.distortion_case_top3_hit_rate >= 0.0
+    assert first_metrics.clarification_case_accuracy >= 0.0

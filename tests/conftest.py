@@ -32,14 +32,23 @@ class FakeLLMGateway:
         else:
             output = LLMStructuredOutput(
                 situation_candidates=[CandidateText(text="상사와 면담 전", confidence=0.91, evidence_span="상사와 면담 전")],
-                automatic_thought_candidates=[CandidateText(text="분명 실패할 거야", confidence=0.88, evidence_span="실패할 거야")],
+                automatic_thought_candidates=[CandidateText(text="다들 내가 무능하다고 생각할 거야", confidence=0.88, evidence_span="무능하다고 생각")],
+                worry_prediction_candidates=[CandidateText(text="분명 실패할 거야", confidence=0.86, evidence_span="실패할 거야")],
                 emotion_candidates=[CandidateEmotion(label="anxiety", intensity_hint=82, confidence=0.9, evidence_span="불안해")],
                 behavior_candidates=[CandidateText(text="피하고 싶다", confidence=0.79, evidence_span="피하고 싶다")],
                 distortion_candidates=[CandidateDistortion(label="fortune_telling", confidence=0.76, rationale_code="future_certainty")],
                 risk_flags=[],
                 needs_clarification=False,
                 missing_fields=[],
-                confidence={"overall": 0.82, "situation": 0.91, "automatic_thought": 0.88, "emotion": 0.9, "behavior": 0.79},
+                confidence={
+                    "overall": 0.82,
+                    "situation": 0.91,
+                    "automatic_thought": 0.88,
+                    "emotion": 0.9,
+                    "behavior": 0.79,
+                    "distortion": 0.76,
+                    "risk": 0.0,
+                },
             )
         log = LLMInvocationLog(
             invocation_id=uuid4(),

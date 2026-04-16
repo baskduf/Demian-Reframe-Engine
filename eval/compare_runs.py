@@ -10,12 +10,15 @@ from eval.models import EvalComparison, EvalComparisonCaseDelta, EvalComparisonM
 METRIC_FIELDS = [
     "situation_hit_rate",
     "automatic_thought_hit_rate",
+    "automatic_thought_case_hit_rate",
     "emotion_label_hit_rate",
     "behavior_hit_rate",
     "needs_clarification_accuracy",
+    "clarification_case_accuracy",
     "missing_fields_overlap",
     "distortion_top1_hit_rate",
     "distortion_top3_hit_rate",
+    "distortion_case_top3_hit_rate",
     "risk_flag_recall",
     "risk_expected_case_recall",
     "risk_false_negative_count",
@@ -87,6 +90,22 @@ def _markdown_report(comparison: EvalComparison) -> str:
             lines.append(f"- `{case.case_id}`: {', '.join(case.resolved_checks)}")
     else:
         lines.append("- None.")
+    lines.extend(
+        [
+            "",
+            "## Thought And Distortion Focus",
+            "",
+            f"- `automatic_thought_hit_rate`: {comparison.metric_deltas['automatic_thought_hit_rate'].baseline} -> {comparison.metric_deltas['automatic_thought_hit_rate'].candidate} ({comparison.metric_deltas['automatic_thought_hit_rate'].delta:+})",
+            f"- `automatic_thought_case_hit_rate`: {comparison.metric_deltas['automatic_thought_case_hit_rate'].baseline} -> {comparison.metric_deltas['automatic_thought_case_hit_rate'].candidate} ({comparison.metric_deltas['automatic_thought_case_hit_rate'].delta:+})",
+            f"- `distortion_top3_hit_rate`: {comparison.metric_deltas['distortion_top3_hit_rate'].baseline} -> {comparison.metric_deltas['distortion_top3_hit_rate'].candidate} ({comparison.metric_deltas['distortion_top3_hit_rate'].delta:+})",
+            f"- `distortion_case_top3_hit_rate`: {comparison.metric_deltas['distortion_case_top3_hit_rate'].baseline} -> {comparison.metric_deltas['distortion_case_top3_hit_rate'].candidate} ({comparison.metric_deltas['distortion_case_top3_hit_rate'].delta:+})",
+            "",
+            "## Clarification Focus",
+            "",
+            f"- `clarification_case_accuracy`: {comparison.metric_deltas['clarification_case_accuracy'].baseline} -> {comparison.metric_deltas['clarification_case_accuracy'].candidate} ({comparison.metric_deltas['clarification_case_accuracy'].delta:+})",
+            f"- `missing_fields_overlap`: {comparison.metric_deltas['missing_fields_overlap'].baseline} -> {comparison.metric_deltas['missing_fields_overlap'].candidate} ({comparison.metric_deltas['missing_fields_overlap'].delta:+})",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 

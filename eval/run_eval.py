@@ -49,6 +49,7 @@ def _build_run_metadata(
         dataset_version=config.dataset_version or manifest.dataset_version,
         dataset_path=str(config.dataset_path),
         case_count=manifest.case_count,
+        case_mix=manifest.case_mix,
         live_eval_enabled=live_enabled,
         include_live_risk_assist=config.include_live_risk_assist,
         include_latency=True,
@@ -62,7 +63,19 @@ def _markdown_report(summary: EvalSummary) -> str:
     metrics = summary.metrics
     meta = summary.run_metadata
     emotion_misses = [case.case_id for case in summary.case_results if not case.emotion_label_hit]
+    thought_misses = [case.case_id for case in summary.case_results if not case.automatic_thought_hit]
+    distortion_misses = [case.case_id for case in summary.case_results if not case.distortion_top3_hit]
     risk_false_negative_cases = [case.case_id for case in summary.case_results if case.risk_false_negative]
+    clarification_misses = [case for case in summary.case_results if "clarification" in case.tags and not case.needs_clarification_hit]
+    clarification_patterns: dict[str, int] = {}
+    for case in clarification_misses:
+        pattern = ", ".join(case.predicted_missing_fields) if case.predicted_missing_fields else "(none)"
+        clarification_patterns[pattern] = clarification_patterns.get(pattern, 0) + 1
+    clarification_pattern_summary = (
+        ", ".join(f"{pattern} x{count}" for pattern, count in sorted(clarification_patterns.items(), key=lambda item: (-item[1], item[0])))
+        if clarification_patterns
+        else "None"
+    )
     lines = [
         "# Model Evaluation Report",
         "",
@@ -70,10 +83,14 @@ def _markdown_report(summary: EvalSummary) -> str:
         f"- Mode: {meta.mode}",
         f"- Timestamp: {meta.run_timestamp.isoformat()}",
         f"- Dataset: {meta.dataset_name} ({meta.dataset_version})",
+        f"- Dataset path: {meta.dataset_path}",
         f"- Model: {meta.model_name or 'n/a'}",
         f"- Parser prompt: {meta.prompt_version or 'n/a'}",
         f"- Risk prompt: {meta.risk_prompt_version or 'n/a'}",
         f"- Total cases: {metrics.total_cases}",
+        f"- Automatic thought subset hit rate: {metrics.automatic_thought_case_hit_rate:.2f}",
+        f"- Distortion subset top-3 hit rate: {metrics.distortion_case_top3_hit_rate:.2f}",
+        f"- Clarification subset accuracy: {metrics.clarification_case_accuracy:.2f}",
         f"- Situation hit rate: {metrics.situation_hit_rate:.2f}",
         f"- Automatic thought hit rate: {metrics.automatic_thought_hit_rate:.2f}",
         f"- Emotion label hit rate: {metrics.emotion_label_hit_rate:.2f}",
@@ -86,16 +103,42 @@ def _markdown_report(summary: EvalSummary) -> str:
         f"- Fallback count: {sum(1 for item in summary.case_results if item.fallback_used)}",
         f"- Banned content count: {sum(1 for item in summary.case_results if item.banned_content)}",
         "",
+        "## Dataset Summary",
+        "",
+        f"- Case count: {meta.case_count}",
+        f"- Case mix: {', '.join(f'{key}={value}' for key, value in sorted(meta.case_mix.items())) if meta.case_mix else 'n/a'}",
+        "",
         "## Risk-Case Summary",
         "",
         f"- Expected risk cases: {metrics.risk_expected_case_count}",
         f"- Expected risk case recall: {metrics.risk_expected_case_recall:.2f}",
         f"- False negative cases: {', '.join(risk_false_negative_cases) if risk_false_negative_cases else 'None'}",
         "",
+        "## Clarification Summary",
+        "",
+        f"- Clarification-tagged cases: {metrics.clarification_case_count}",
+        f"- Clarification subset accuracy: {metrics.clarification_case_accuracy:.2f}",
+        f"- Clarification miss cases: {', '.join(case.case_id for case in clarification_misses) if clarification_misses else 'None'}",
+        f"- Common predicted missing-field patterns: {clarification_pattern_summary}",
+        "",
         "## Emotion Miss Summary",
         "",
         f"- Emotion misses: {len(emotion_misses)}",
         f"- Missed cases: {', '.join(emotion_misses) if emotion_misses else 'None'}",
+        "",
+        "## Automatic Thought Miss Summary",
+        "",
+        f"- Automatic thought misses: {len(thought_misses)}",
+        f"- Automatic thought tagged cases: {metrics.automatic_thought_case_count}",
+        f"- Automatic thought subset hit rate: {metrics.automatic_thought_case_hit_rate:.2f}",
+        f"- Missed cases: {', '.join(thought_misses) if thought_misses else 'None'}",
+        "",
+        "## Distortion Miss Summary",
+        "",
+        f"- Distortion misses: {len(distortion_misses)}",
+        f"- Distortion tagged cases: {metrics.distortion_case_count}",
+        f"- Distortion subset top-3 hit rate: {metrics.distortion_case_top3_hit_rate:.2f}",
+        f"- Missed cases: {', '.join(distortion_misses) if distortion_misses else 'None'}",
         "",
         "## Case Errors",
         "",
@@ -132,6 +175,7 @@ def run_evaluation(config: EvalRunConfig) -> dict:
                     dataset_version=config.dataset_version or manifest.dataset_version,
                     dataset_path=str(config.dataset_path),
                     case_count=manifest.case_count,
+                    case_mix=manifest.case_mix,
                     live_eval_enabled=False,
                     include_live_risk_assist=config.include_live_risk_assist,
                     include_latency=True,

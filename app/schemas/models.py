@@ -166,6 +166,7 @@ class ThoughtRecord(BaseModel):
     behavior_experiment: BehaviorExperiment | None = None
     llm_situation_candidates: list[LLMTextCandidate] = Field(default_factory=list)
     llm_automatic_thought_candidates: list[LLMTextCandidate] = Field(default_factory=list)
+    llm_worry_prediction_candidates: list[LLMTextCandidate] = Field(default_factory=list)
     llm_emotion_candidates: list[LLMEmotionCandidate] = Field(default_factory=list)
     llm_behavior_candidates: list[LLMTextCandidate] = Field(default_factory=list)
     llm_distortion_candidates: list[LLMDistortionCandidate] = Field(default_factory=list)

@@ -16,6 +16,17 @@ ALLOWED_RISK_FLAGS = (
     "psychotic_expression",
     "acute_deterioration",
 )
+ALLOWED_DISTORTION_LABELS = (
+    "mind_reading",
+    "fortune_telling",
+    "catastrophizing",
+    "should_statements",
+    "self_blame",
+    "overgeneralization",
+    "intolerance_of_uncertainty",
+    "probability_overestimation",
+    "uncertainty_focus",
+)
 
 
 class CandidateText(BaseModel):
@@ -46,6 +57,7 @@ class CandidateRiskFlag(BaseModel):
 class LLMStructuredOutput(BaseModel):
     situation_candidates: list[CandidateText] = Field(default_factory=list)
     automatic_thought_candidates: list[CandidateText] = Field(default_factory=list)
+    worry_prediction_candidates: list[CandidateText] = Field(default_factory=list)
     emotion_candidates: list[CandidateEmotion] = Field(default_factory=list)
     behavior_candidates: list[CandidateText] = Field(default_factory=list)
     distortion_candidates: list[CandidateDistortion] = Field(default_factory=list)

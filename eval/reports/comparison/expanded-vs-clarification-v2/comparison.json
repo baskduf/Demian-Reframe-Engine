@@ -1,0 +1,326 @@
+{
+  "baseline_label": "expanded-live-eval",
+  "candidate_label": "clarification-live-v2",
+  "metric_deltas": {
+    "situation_hit_rate": {
+      "baseline": 0.9666666666666667,
+      "candidate": 0.9833333333333333,
+      "delta": 0.016666666666666607
+    },
+    "automatic_thought_hit_rate": {
+      "baseline": 0.7,
+      "candidate": 0.7666666666666667,
+      "delta": 0.06666666666666676
+    },
+    "automatic_thought_case_hit_rate": {
+      "baseline": 0.75,
+      "candidate": 0.7,
+      "delta": -0.050000000000000044
+    },
+    "emotion_label_hit_rate": {
+      "baseline": 0.9333333333333333,
+      "candidate": 0.7333333333333333,
+      "delta": -0.20000000000000007
+    },
+    "behavior_hit_rate": {
+      "baseline": 0.8166666666666667,
+      "candidate": 0.8166666666666667,
+      "delta": 0.0
+    },
+    "needs_clarification_accuracy": {
+      "baseline": 0.8666666666666667,
+      "candidate": 0.9666666666666667,
+      "delta": 0.09999999999999998
+    },
+    "clarification_case_accuracy": {
+      "baseline": 0.2,
+      "candidate": 0.9,
+      "delta": 0.7
+    },
+    "missing_fields_overlap": {
+      "baseline": 0.788888888888889,
+      "candidate": 0.9083333333333333,
+      "delta": 0.11944444444444435
+    },
+    "distortion_top1_hit_rate": {
+      "baseline": 0.95,
+      "candidate": 0.9333333333333333,
+      "delta": -0.016666666666666607
+    },
+    "distortion_top3_hit_rate": {
+      "baseline": 0.9666666666666667,
+      "candidate": 0.95,
+      "delta": -0.01666666666666672
+    },
+    "distortion_case_top3_hit_rate": {
+      "baseline": 0.9166666666666666,
+      "candidate": 0.9166666666666666,
+      "delta": 0.0
+    },
+    "risk_flag_recall": {
+      "baseline": 1.0,
+      "candidate": 1.0,
+      "delta": 0.0
+    },
+    "risk_expected_case_recall": {
+      "baseline": 1.0,
+      "candidate": 1.0,
+      "delta": 0.0
+    },
+    "risk_false_negative_count": {
+      "baseline": 0,
+      "candidate": 0,
+      "delta": 0
+    },
+    "schema_valid_rate": {
+      "baseline": 1.0,
+      "candidate": 1.0,
+      "delta": 0.0
+    },
+    "fallback_rate": {
+      "baseline": 0.0,
+      "candidate": 0.0,
+      "delta": 0.0
+    },
+    "banned_content_rate": {
+      "baseline": 0.0,
+      "candidate": 0.0,
+      "delta": 0.0
+    },
+    "avg_latency_ms": {
+      "baseline": 5837.070166666667,
+      "candidate": 5317.923833333333,
+      "delta": -519.146333333334
+    }
+  },
+  "worsened_cases": [
+    {
+      "case_id": "case-005",
+      "newly_failed_checks": [
+        "automatic_thought_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-006",
+      "newly_failed_checks": [
+        "clarification_miss",
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-009",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-012",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-013",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-018",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-021",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-023",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-024",
+      "newly_failed_checks": [
+        "automatic_thought_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-028",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-033",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-035",
+      "newly_failed_checks": [
+        "distortion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-038",
+      "newly_failed_checks": [
+        "distortion_miss",
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-039",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-058",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    },
+    {
+      "case_id": "case-059",
+      "newly_failed_checks": [
+        "emotion_miss"
+      ],
+      "resolved_checks": []
+    }
+  ],
+  "improved_cases": [
+    {
+      "case_id": "case-001",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "case-009",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "case-011",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "case-012",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "case-015",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-018",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-020",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-024",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-034",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "case-042",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-048",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "distortion_miss"
+      ]
+    },
+    {
+      "case_id": "case-050",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-052",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-058",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "case-059",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "case-060",
+      "newly_failed_checks": [],
+      "resolved_checks": [
+        "clarification_miss"
+      ]
+    }
+  ]
+}

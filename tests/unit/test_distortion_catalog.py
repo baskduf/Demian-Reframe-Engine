@@ -28,3 +28,10 @@ def test_distortion_falls_back_to_uncertainty_focus_when_no_rule_matches() -> No
     result = detect_distortions("회의가 있다", "어떻게 될지 모르겠다")
     assert result[0].distortion_id == "uncertainty_focus"
     assert result[0].is_primary is True
+
+
+def test_distortion_is_thought_aware_and_prioritizes_thought_matches_first() -> None:
+    result = detect_distortions("나는 항상 문제를 만드는 사람이야", "분명 잘못될 거고 결국 최악이 될 거야")
+    ids = [item.distortion_id for item in result]
+    assert ids[0] in {"overgeneralization", "self_blame"}
+    assert "fortune_telling" in ids or "catastrophizing" in ids

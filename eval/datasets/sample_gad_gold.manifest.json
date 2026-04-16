@@ -1,7 +1,15 @@
-{
+﻿{
   "dataset_name": "sample_gad_gold",
-  "dataset_version": "2026-04-16",
-  "case_count": 20,
+  "dataset_version": "2026-04-16-expanded-v1",
+  "case_count": 60,
   "language": "ko",
-  "notes": "Seed Korean GAD evaluation set for parser and prompt iteration."
+  "notes": "Expanded Korean GAD evaluation set for parser, prompt, and regression comparison.",
+  "case_mix": {
+    "situation": 3,
+    "automatic_thought": 20,
+    "distortion": 24,
+    "risk": 10,
+    "clarification": 10,
+    "emotion_behavior": 13
+  }
 }

@@ -34,6 +34,14 @@ Required top-level fields:
 
 `gold` contains acceptable answers rather than a single forced answer. This keeps the scorer clinically pragmatic and avoids overfitting to wording.
 
+Each case may also include `tags` so subset metrics can be calculated from explicit annotations instead of heuristics. Current curated subsets are:
+
+- `automatic_thought`
+- `distortion`
+- `risk`
+- `clarification`
+- `emotion_behavior`
+
 ## Gold Authoring Rules
 
 - Prefer short, realistic Korean GAD journal snippets.
@@ -41,6 +49,7 @@ Required top-level fields:
 - Use acceptable answer lists for `situation`, `automatic_thought`, and `behavior`.
 - Keep risk cases explicit and conservative.
 - Mark ambiguous cases with `needs_clarification=true`.
+- Tag cases with the dominant evaluation subset when a case is intentionally included for regression tracking.
 - Treat false negatives for risk flags as the most important evaluation error.
 
 ## Metrics
@@ -57,6 +66,13 @@ Primary metrics:
 - `distortion_top3_hit_rate`
 - `risk_flag_recall`
 - `risk_false_negative_count`
+
+Subset metrics:
+
+- `automatic_thought_case_hit_rate`
+- `distortion_case_top3_hit_rate`
+- `clarification_case_accuracy`
+- `risk_expected_case_recall`
 
 Operational metrics:
 
@@ -110,9 +126,10 @@ These outputs are designed to support both machine-readable trend tracking and r
 
 The initial sample gold set is intentionally small and mixed:
 
-- general structuring cases
-- clarification/ambiguity cases
-- distortion candidate cases
+- automatic thought focused cases
+- distortion boundary cases
+- clarification / ambiguity cases
 - risk assist cases
+- emotion / body / behavior mixture cases
 
-This is a seed set for prompt and parser iteration, not a validated clinical benchmark.
+The current curated repository set is larger than the original seed and is intended to improve regression reliability, but it is still not a validated clinical benchmark.

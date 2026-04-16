@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from app.config.llm import OPENAI_MODEL_STRUCTURER
 from app.llm.client import OpenAIClientError, OpenAIResponsesClient
-from app.llm.contracts import ALLOWED_EMOTION_LABELS, LLMInvocationLog, LLMStructuredOutput
+from app.llm.contracts import ALLOWED_DISTORTION_LABELS, ALLOWED_EMOTION_LABELS, LLMInvocationLog, LLMStructuredOutput
 from app.llm.prompts import PARSER_PROMPT_VERSION, PARSER_SYSTEM_PROMPT
 from app.schemas.models import StateEnum
 
@@ -30,6 +30,19 @@ STRUCTURED_OUTPUT_SCHEMA: dict[str, Any] = {
             },
         },
         "automatic_thought_candidates": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "text": {"type": "string"},
+                    "confidence": {"type": "number"},
+                    "evidence_span": {"type": "string"},
+                },
+                "required": ["text", "confidence", "evidence_span"],
+            },
+        },
+        "worry_prediction_candidates": {
             "type": "array",
             "items": {
                 "type": "object",
@@ -75,7 +88,7 @@ STRUCTURED_OUTPUT_SCHEMA: dict[str, Any] = {
                 "type": "object",
                 "additionalProperties": False,
                 "properties": {
-                    "label": {"type": "string"},
+                    "label": {"type": "string", "enum": list(ALLOWED_DISTORTION_LABELS)},
                     "confidence": {"type": "number"},
                     "rationale_code": {"type": "string"},
                 },
@@ -123,6 +136,7 @@ STRUCTURED_OUTPUT_SCHEMA: dict[str, Any] = {
     "required": [
         "situation_candidates",
         "automatic_thought_candidates",
+        "worry_prediction_candidates",
         "emotion_candidates",
         "behavior_candidates",
         "distortion_candidates",
@@ -134,6 +148,52 @@ STRUCTURED_OUTPUT_SCHEMA: dict[str, Any] = {
 }
 
 BANNED_TERMS = ("diagnosis", "diagnosed", "delusion", "psychosis", "major depressive disorder", "schizophrenia")
+FUTURE_MARKERS = ("will", "going to", "might", "could", "probably", "definitely", "결국", "분명", "망치면", "잘못될", "어쩌나", "같아")
+SELF_OR_OTHER_JUDGMENT_MARKERS = ("i am", "i'm", "they will think", "people will think", "나는", "내가", "다들", "사람들이", "무능", "문제")
+AMBIGUITY_MARKERS = (
+    "모르겠",
+    "잘 모르",
+    "잘 안",
+    "막연",
+    "정확히",
+    "설명은 잘 안",
+    "뭐라고 말",
+    "안 잡혀",
+    "not sure",
+)
+DIRECT_EMOTION_MARKERS = (
+    "불안",
+    "긴장",
+    "초조",
+    "무섭",
+    "겁",
+    "두렵",
+    "공황",
+    "패닉",
+    "창피",
+    "부끄",
+    "수치",
+    "우울",
+    "슬프",
+    "절망",
+)
+BODY_MARKERS = (
+    "가슴",
+    "심장",
+    "숨",
+    "손이 떨",
+    "몸이 굳",
+    "배가 아프",
+    "두근",
+    "조여",
+    "초조해서",
+    "잠을 거의 못",
+)
+STATE_REQUIRED_MISSING_FIELDS: dict[StateEnum, tuple[str, ...]] = {
+    StateEnum.SITUATION_CAPTURE: ("situation", "trigger_text"),
+    StateEnum.WORRY_THOUGHT_CAPTURE: ("automatic_thought", "worry_prediction"),
+    StateEnum.EMOTION_BODY_BEHAVIOR_CAPTURE: ("emotions", "body_symptoms_or_safety_behaviors"),
+}
 
 
 def _contains_banned_terms(value: Any) -> bool:
@@ -156,9 +216,9 @@ EMOTION_LABEL_ALIASES = {
     "fear": "fear",
     "afraid": "fear",
     "scared": "fear",
-    "무서움": "fear",
+    "무서": "fear",
     "겁": "fear",
-    "두려움": "fear",
+    "두려": "fear",
     "panic": "panic",
     "panic attack": "panic",
     "패닉": "panic",
@@ -166,18 +226,17 @@ EMOTION_LABEL_ALIASES = {
     "shame": "shame",
     "ashamed": "shame",
     "embarrassed": "shame",
-    "부끄러움": "shame",
+    "부끄": "shame",
     "창피": "shame",
     "수치": "shame",
     "sadness": "sadness",
     "sad": "sadness",
     "depressed": "sadness",
-    "슬픔": "sadness",
     "우울": "sadness",
+    "슬프": "sadness",
     "despair": "despair",
     "hopeless": "despair",
     "절망": "despair",
-    "희망없음": "despair",
 }
 
 
@@ -191,14 +250,170 @@ def _normalize_emotion_label(label: str) -> str:
     return normalized
 
 
-def _normalize_structured_output(parsed: dict[str, Any]) -> dict[str, Any]:
+def _contains_any_marker(text: str, markers: tuple[str, ...]) -> bool:
+    lowered = text.lower()
+    return any(marker in lowered for marker in markers)
+
+
+def _dedupe_fields(fields: list[str]) -> list[str]:
+    deduped: list[str] = []
+    for field in fields:
+        if field not in deduped:
+            deduped.append(field)
+    return deduped
+
+
+def _normalize_structured_output(parsed: dict[str, Any], *, state: StateEnum | None = None, free_text: str = "") -> dict[str, Any]:
     normalized = dict(parsed)
+    automatic_candidates = _normalize_text_candidates(
+        parsed.get("automatic_thought_candidates", []),
+        kind="automatic_thought",
+    )
+    worry_candidates = _normalize_text_candidates(
+        parsed.get("worry_prediction_candidates", []),
+        kind="worry_prediction",
+    )
+    automatic_candidates, worry_candidates = _rebalance_thought_and_prediction_candidates(automatic_candidates, worry_candidates)
+    normalized["automatic_thought_candidates"] = automatic_candidates
+    normalized["worry_prediction_candidates"] = worry_candidates
     normalized_emotions = []
     for item in parsed.get("emotion_candidates", []):
         candidate = dict(item)
         candidate["label"] = _normalize_emotion_label(str(candidate.get("label", "")))
         normalized_emotions.append(candidate)
     normalized["emotion_candidates"] = normalized_emotions
+    normalized["distortion_candidates"] = _normalize_distortion_candidates(parsed.get("distortion_candidates", []))
+    if state is not None:
+        normalized = _apply_state_clarification_rules(normalized, state=state, free_text=free_text)
+    return normalized
+
+
+def _normalize_text_candidates(candidates: list[dict[str, Any]], *, kind: str) -> list[dict[str, Any]]:
+    normalized: list[dict[str, Any]] = []
+    for item in candidates:
+        candidate = dict(item)
+        text = " ".join(str(candidate.get("text", "")).strip().split())
+        lowered = text.lower()
+        if not text:
+            continue
+        if kind == "automatic_thought" and any(marker in lowered for marker in FUTURE_MARKERS) and not any(
+            marker in lowered for marker in SELF_OR_OTHER_JUDGMENT_MARKERS
+        ):
+            continue
+        if kind == "worry_prediction" and any(marker in lowered for marker in SELF_OR_OTHER_JUDGMENT_MARKERS) and not any(
+            marker in lowered for marker in FUTURE_MARKERS
+        ):
+            continue
+        candidate["text"] = text
+        normalized.append(candidate)
+    return normalized
+
+
+def _rebalance_thought_and_prediction_candidates(
+    automatic_candidates: list[dict[str, Any]],
+    worry_candidates: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    def contains_marker(text: str, markers: tuple[str, ...]) -> bool:
+        lowered = text.lower()
+        return any(marker in lowered for marker in markers)
+
+    rebalanced_automatic = list(automatic_candidates)
+    rebalanced_worry = list(worry_candidates)
+
+    for candidate in automatic_candidates:
+        text = candidate["text"]
+        if contains_marker(text, FUTURE_MARKERS) and not any(item["text"] == text for item in rebalanced_worry):
+            rebalanced_worry.append(dict(candidate))
+
+    for candidate in worry_candidates:
+        text = candidate["text"]
+        if contains_marker(text, SELF_OR_OTHER_JUDGMENT_MARKERS) and not any(item["text"] == text for item in rebalanced_automatic):
+            rebalanced_automatic.append(dict(candidate))
+
+    return rebalanced_automatic, rebalanced_worry
+
+
+def _apply_state_clarification_rules(parsed: dict[str, Any], *, state: StateEnum, free_text: str) -> dict[str, Any]:
+    normalized = dict(parsed)
+    normalized["needs_clarification"] = False
+    lowered = free_text.strip().lower()
+    has_ambiguity = _contains_any_marker(lowered, AMBIGUITY_MARKERS)
+    has_direct_emotion_words = _contains_any_marker(lowered, DIRECT_EMOTION_MARKERS)
+    has_body_markers = _contains_any_marker(lowered, BODY_MARKERS)
+
+    missing_fields: list[str] = []
+    situation_candidates = normalized.get("situation_candidates", [])
+    thought_candidates = normalized.get("automatic_thought_candidates", [])
+    worry_candidates = normalized.get("worry_prediction_candidates", [])
+    emotion_candidates = normalized.get("emotion_candidates", [])
+    behavior_candidates = normalized.get("behavior_candidates", [])
+
+    if state == StateEnum.SITUATION_CAPTURE:
+        if not situation_candidates:
+            missing_fields.extend(["situation", "trigger_text"])
+        else:
+            missing_fields.append("trigger_text")
+            if has_ambiguity:
+                missing_fields.append("situation")
+
+    elif state == StateEnum.WORRY_THOUGHT_CAPTURE:
+        if not thought_candidates and not worry_candidates:
+            missing_fields.extend(["automatic_thought", "worry_prediction"])
+        elif has_ambiguity:
+            if not thought_candidates:
+                missing_fields.append("automatic_thought")
+            if not worry_candidates:
+                missing_fields.append("worry_prediction")
+
+    elif state == StateEnum.EMOTION_BODY_BEHAVIOR_CAPTURE:
+        if not emotion_candidates:
+            missing_fields.append("emotions")
+        if has_ambiguity:
+            if not emotion_candidates:
+                missing_fields.append("emotions")
+            missing_fields.append("body_symptoms_or_safety_behaviors")
+        elif has_body_markers and not has_direct_emotion_words and not emotion_candidates:
+            missing_fields.extend(["emotions", "body_symptoms_or_safety_behaviors"])
+
+    normalized["missing_fields"] = _dedupe_fields(missing_fields)
+    required_fields = STATE_REQUIRED_MISSING_FIELDS.get(state, tuple())
+    if state == StateEnum.SITUATION_CAPTURE and situation_candidates and "trigger_text" in normalized["missing_fields"] and not has_ambiguity:
+        return normalized
+    if any(field in normalized["missing_fields"] for field in required_fields):
+        normalized["needs_clarification"] = True
+    return normalized
+
+
+DISTORTION_LABEL_ALIASES = {
+    "mind reading": "mind_reading",
+    "mind_reading": "mind_reading",
+    "fortune telling": "fortune_telling",
+    "fortune_telling": "fortune_telling",
+    "catastrophizing": "catastrophizing",
+    "should statements": "should_statements",
+    "should_statements": "should_statements",
+    "self blame": "self_blame",
+    "self_blame": "self_blame",
+    "overgeneralization": "overgeneralization",
+    "intolerance of uncertainty": "intolerance_of_uncertainty",
+    "intolerance_of_uncertainty": "intolerance_of_uncertainty",
+    "probability overestimation": "probability_overestimation",
+    "probability_overestimation": "probability_overestimation",
+    "uncertainty focus": "uncertainty_focus",
+    "uncertainty_focus": "uncertainty_focus",
+}
+
+
+def _normalize_distortion_candidates(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    normalized: list[dict[str, Any]] = []
+    for item in candidates:
+        candidate = dict(item)
+        label = str(candidate.get("label", "")).strip().lower()
+        canonical = DISTORTION_LABEL_ALIASES.get(label, label.replace(" ", "_"))
+        if canonical not in ALLOWED_DISTORTION_LABELS:
+            continue
+        candidate["label"] = canonical
+        normalized.append(candidate)
     return normalized
 
 
@@ -220,7 +435,7 @@ class LLMParser:
                 schema_name="cbt_structured_output",
                 schema=STRUCTURED_OUTPUT_SCHEMA,
             )
-            parsed = _normalize_structured_output(parsed)
+            parsed = _normalize_structured_output(parsed, state=state, free_text=free_text)
             if _contains_banned_terms(parsed):
                 raise OpenAIClientError("banned_content", "Structured output contained banned clinical language")
             output = LLMStructuredOutput.model_validate(parsed)

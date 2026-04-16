@@ -206,7 +206,17 @@ Comparison artifacts:
 - `comparison.json`
 - `comparison.md`
 
-The sample evaluation set is intentionally small and is meant for parser/prompt iteration, not for clinical benchmarking.
+The bundled Korean GAD evaluation set is now an expanded curated regression set with explicit category mix tracking for:
+
+- `automatic_thought`
+- `distortion`
+- `risk`
+- `clarification`
+- `emotion_behavior`
+
+Reports surface both overall metrics and subset metrics such as `automatic_thought_case_hit_rate`, `distortion_case_top3_hit_rate`, `clarification_case_accuracy`, and `risk_expected_case_recall`.
+
+This dataset is still an internal prompt/parser regression tool, not clinical benchmarking evidence.
 
 ## Design Docs
 

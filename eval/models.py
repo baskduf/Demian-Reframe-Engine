@@ -34,6 +34,7 @@ class EvalCase(BaseModel):
     state: StateEnum
     language: str = "ko"
     free_text: str
+    tags: list[str] = Field(default_factory=list)
     gold: EvalGold
 
 
@@ -60,14 +61,20 @@ class EvalPrediction(BaseModel):
 class EvalMetrics(BaseModel):
     total_cases: int = 0
     risk_expected_case_count: int = 0
+    automatic_thought_case_count: int = 0
+    distortion_case_count: int = 0
+    clarification_case_count: int = 0
     situation_hit_rate: float = 0.0
     automatic_thought_hit_rate: float = 0.0
+    automatic_thought_case_hit_rate: float = 0.0
     emotion_label_hit_rate: float = 0.0
     behavior_hit_rate: float = 0.0
     needs_clarification_accuracy: float = 0.0
+    clarification_case_accuracy: float = 0.0
     missing_fields_overlap: float = 0.0
     distortion_top1_hit_rate: float = 0.0
     distortion_top3_hit_rate: float = 0.0
+    distortion_case_top3_hit_rate: float = 0.0
     risk_flag_recall: float = 0.0
     risk_expected_case_recall: float = 0.0
     risk_false_negative_count: int = 0
@@ -79,6 +86,9 @@ class EvalMetrics(BaseModel):
 
 class EvalCaseResult(BaseModel):
     case_id: str
+    tags: list[str] = Field(default_factory=list)
+    predicted_missing_fields: list[str] = Field(default_factory=list)
+    expected_missing_fields: list[str] = Field(default_factory=list)
     risk_expected_case: bool = False
     situation_hit: bool
     automatic_thought_hit: bool
@@ -116,6 +126,7 @@ class DatasetManifest(BaseModel):
     case_count: int
     language: str = "ko"
     notes: str = ""
+    case_mix: dict[str, int] = Field(default_factory=dict)
 
 
 class EvalRunMetadata(BaseModel):
@@ -127,6 +138,7 @@ class EvalRunMetadata(BaseModel):
     dataset_version: str
     dataset_path: str
     case_count: int
+    case_mix: dict[str, int] = Field(default_factory=dict)
     live_eval_enabled: bool
     include_live_risk_assist: bool
     include_latency: bool = True

@@ -1,0 +1,1663 @@
+{
+  "mode": "live",
+  "skipped": false,
+  "reason": null,
+  "run_metadata": {
+    "run_name": "clarification-live-v2",
+    "report_label": "clarification-live-v2",
+    "run_timestamp": "2026-04-16T08:38:57.458541",
+    "mode": "live",
+    "dataset_name": "sample_gad_gold",
+    "dataset_version": "2026-04-16-expanded-v1",
+    "dataset_path": "eval\\datasets\\sample_gad_gold.jsonl",
+    "case_count": 60,
+    "case_mix": {
+      "situation": 3,
+      "automatic_thought": 20,
+      "distortion": 24,
+      "risk": 10,
+      "clarification": 10,
+      "emotion_behavior": 13
+    },
+    "live_eval_enabled": true,
+    "include_live_risk_assist": true,
+    "include_latency": true,
+    "model_name": "gpt-4.1-mini",
+    "prompt_version": "parser-2026-04-16-v4",
+    "risk_prompt_version": "risk-assist-2026-04-16-v2"
+  },
+  "metrics": {
+    "total_cases": 60,
+    "risk_expected_case_count": 10,
+    "automatic_thought_case_count": 20,
+    "distortion_case_count": 24,
+    "clarification_case_count": 10,
+    "situation_hit_rate": 0.9833333333333333,
+    "automatic_thought_hit_rate": 0.7666666666666667,
+    "automatic_thought_case_hit_rate": 0.7,
+    "emotion_label_hit_rate": 0.7333333333333333,
+    "behavior_hit_rate": 0.8166666666666667,
+    "needs_clarification_accuracy": 0.9666666666666667,
+    "clarification_case_accuracy": 0.9,
+    "missing_fields_overlap": 0.9083333333333333,
+    "distortion_top1_hit_rate": 0.9333333333333333,
+    "distortion_top3_hit_rate": 0.95,
+    "distortion_case_top3_hit_rate": 0.9166666666666666,
+    "risk_flag_recall": 1.0,
+    "risk_expected_case_recall": 1.0,
+    "risk_false_negative_count": 0,
+    "schema_valid_rate": 1.0,
+    "fallback_rate": 0.0,
+    "banned_content_rate": 0.0,
+    "avg_latency_ms": 5317.923833333333
+  },
+  "case_results": [
+    {
+      "case_id": "case-001",
+      "tags": [
+        "situation",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [
+        "trigger_text"
+      ],
+      "expected_missing_fields": [
+        "trigger_text"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4658.99,
+      "errors": [
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "case-002",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6262.96,
+      "errors": []
+    },
+    {
+      "case_id": "case-003",
+      "tags": [
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 3680.27,
+      "errors": [
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "case-004",
+      "tags": [
+        "situation",
+        "distortion"
+      ],
+      "predicted_missing_fields": [
+        "trigger_text"
+      ],
+      "expected_missing_fields": [
+        "trigger_text"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": false,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5699.25,
+      "errors": [
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "case-005",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 7641.42,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-006",
+      "tags": [
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [
+        "emotions",
+        "body_symptoms_or_safety_behaviors"
+      ],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": false,
+      "needs_clarification_hit": false,
+      "missing_fields_overlap": 0.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 3768.4,
+      "errors": [
+        "emotion_miss",
+        "behavior_miss",
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "case-007",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5502.51,
+      "errors": []
+    },
+    {
+      "case_id": "case-008",
+      "tags": [
+        "situation",
+        "distortion"
+      ],
+      "predicted_missing_fields": [
+        "trigger_text"
+      ],
+      "expected_missing_fields": [
+        "trigger_text"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4552.43,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "case-009",
+      "tags": [
+        "clarification"
+      ],
+      "predicted_missing_fields": [
+        "automatic_thought",
+        "worry_prediction"
+      ],
+      "expected_missing_fields": [
+        "automatic_thought"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 0.5,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4397.56,
+      "errors": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-010",
+      "tags": [
+        "clarification"
+      ],
+      "predicted_missing_fields": [
+        "trigger_text",
+        "situation"
+      ],
+      "expected_missing_fields": [
+        "situation",
+        "trigger_text"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4878.08,
+      "errors": []
+    },
+    {
+      "case_id": "case-011",
+      "tags": [
+        "clarification",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [
+        "emotions"
+      ],
+      "expected_missing_fields": [
+        "emotions",
+        "body_symptoms_or_safety_behaviors"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 0.5,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 3932.01,
+      "errors": []
+    },
+    {
+      "case_id": "case-012",
+      "tags": [
+        "clarification"
+      ],
+      "predicted_missing_fields": [
+        "automatic_thought",
+        "worry_prediction"
+      ],
+      "expected_missing_fields": [
+        "automatic_thought",
+        "worry_prediction"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 3896.37,
+      "errors": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-013",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5232.18,
+      "errors": [
+        "automatic_thought_miss",
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-014",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4475.43,
+      "errors": []
+    },
+    {
+      "case_id": "case-015",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5234.76,
+      "errors": []
+    },
+    {
+      "case_id": "case-016",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5726.02,
+      "errors": []
+    },
+    {
+      "case_id": "case-017",
+      "tags": [
+        "risk"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5234.13,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-018",
+      "tags": [
+        "risk"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4439.24,
+      "errors": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-019",
+      "tags": [
+        "risk",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4813.33,
+      "errors": []
+    },
+    {
+      "case_id": "case-020",
+      "tags": [
+        "risk"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4602.72,
+      "errors": []
+    },
+    {
+      "case_id": "case-021",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4918.89,
+      "errors": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-022",
+      "tags": [
+        "automatic_thought",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6592.43,
+      "errors": [
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "case-023",
+      "tags": [
+        "automatic_thought",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4893.4,
+      "errors": [
+        "emotion_miss",
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "case-024",
+      "tags": [
+        "automatic_thought",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5287.33,
+      "errors": [
+        "automatic_thought_miss",
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "case-025",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5076.92,
+      "errors": []
+    },
+    {
+      "case_id": "case-026",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6583.41,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-027",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5787.45,
+      "errors": []
+    },
+    {
+      "case_id": "case-028",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5529.23,
+      "errors": [
+        "automatic_thought_miss",
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-029",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6551.69,
+      "errors": []
+    },
+    {
+      "case_id": "case-030",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4252.45,
+      "errors": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-046",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 7724.0,
+      "errors": [
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "case-047",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5345.21,
+      "errors": []
+    },
+    {
+      "case_id": "case-048",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6344.78,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-049",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4748.09,
+      "errors": []
+    },
+    {
+      "case_id": "case-050",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": false,
+      "distortion_top3_hit": false,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 7318.86,
+      "errors": [
+        "emotion_miss",
+        "distortion_miss"
+      ]
+    },
+    {
+      "case_id": "case-051",
+      "tags": [
+        "risk"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5628.06,
+      "errors": []
+    },
+    {
+      "case_id": "case-052",
+      "tags": [
+        "risk"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5047.41,
+      "errors": []
+    },
+    {
+      "case_id": "case-053",
+      "tags": [
+        "risk"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 7426.78,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-054",
+      "tags": [
+        "risk"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 8305.52,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-055",
+      "tags": [
+        "risk",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5381.35,
+      "errors": [
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "case-056",
+      "tags": [
+        "risk"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6559.83,
+      "errors": []
+    },
+    {
+      "case_id": "case-057",
+      "tags": [
+        "clarification",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [
+        "body_symptoms_or_safety_behaviors"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": false,
+      "missing_fields_overlap": 0.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6447.32,
+      "errors": [
+        "behavior_miss",
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "case-058",
+      "tags": [
+        "clarification",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [
+        "emotions",
+        "body_symptoms_or_safety_behaviors"
+      ],
+      "expected_missing_fields": [
+        "emotions"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 0.5,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 3782.2,
+      "errors": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-059",
+      "tags": [
+        "clarification",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [
+        "emotions",
+        "body_symptoms_or_safety_behaviors"
+      ],
+      "expected_missing_fields": [
+        "emotions"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 0.5,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4553.25,
+      "errors": [
+        "emotion_miss",
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "case-060",
+      "tags": [
+        "clarification",
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [
+        "trigger_text",
+        "situation"
+      ],
+      "expected_missing_fields": [
+        "situation",
+        "trigger_text"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4943.18,
+      "errors": []
+    },
+    {
+      "case_id": "case-031",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6702.77,
+      "errors": []
+    },
+    {
+      "case_id": "case-032",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5591.71,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-033",
+      "tags": [
+        "clarification"
+      ],
+      "predicted_missing_fields": [
+        "automatic_thought",
+        "worry_prediction"
+      ],
+      "expected_missing_fields": [
+        "automatic_thought"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 0.5,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 3549.06,
+      "errors": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-034",
+      "tags": [
+        "clarification"
+      ],
+      "predicted_missing_fields": [
+        "automatic_thought"
+      ],
+      "expected_missing_fields": [
+        "worry_prediction"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 0.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5700.64,
+      "errors": []
+    },
+    {
+      "case_id": "case-035",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": false,
+      "distortion_top3_hit": false,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4944.02,
+      "errors": [
+        "distortion_miss"
+      ]
+    },
+    {
+      "case_id": "case-036",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4498.67,
+      "errors": []
+    },
+    {
+      "case_id": "case-037",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5716.89,
+      "errors": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-038",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": false,
+      "distortion_top3_hit": false,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 3670.85,
+      "errors": [
+        "automatic_thought_miss",
+        "emotion_miss",
+        "distortion_miss"
+      ]
+    },
+    {
+      "case_id": "case-039",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": false,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4962.27,
+      "errors": [
+        "emotion_miss"
+      ]
+    },
+    {
+      "case_id": "case-040",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4614.73,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-041",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5077.74,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    },
+    {
+      "case_id": "case-042",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5940.88,
+      "errors": []
+    },
+    {
+      "case_id": "case-043",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5203.07,
+      "errors": []
+    },
+    {
+      "case_id": "case-044",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5084.67,
+      "errors": []
+    },
+    {
+      "case_id": "case-045",
+      "tags": [
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4160.36,
+      "errors": [
+        "automatic_thought_miss"
+      ]
+    }
+  ]
+}
