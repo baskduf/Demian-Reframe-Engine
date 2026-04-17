@@ -273,7 +273,7 @@ class SessionService:
             trace = self._transition(session, StateEnum.CRISIS, request.model_dump(), risk.triggered_rule_ids, ["risk.high"])
             return self._build_envelope(session, trace.transition_id, {"risk_level": risk.risk_level, "triggered_rule_ids": risk.triggered_rule_ids}, "risk.high")
 
-        template_id = "risk.moderate" if risk.risk_level == RiskLevel.MODERATE else "prompt.situation"
+        template_id = "risk.moderate" if risk.risk_level == RiskLevel.MODERATE else "prompt.eligibility"
         trace = self._transition(session, StateEnum.ELIGIBILITY_CHECK, request.model_dump(), risk.triggered_rule_ids, [template_id])
         return self._build_envelope(session, trace.transition_id, {"risk_level": risk.risk_level, "triggered_rule_ids": risk.triggered_rule_ids}, template_id)
 
@@ -303,7 +303,7 @@ class SessionService:
 
         if state == StateEnum.ELIGIBILITY_CHECK:
             if "invalid_fields" in validation_state_data:
-                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.situation")
+                return self._build_envelope(session, state_data=llm_state_data, template_id="prompt.eligibility")
             if not payload.get("is_adult", False) or payload.get("target_condition") != "gad":
                 session.status = SessionStatus.CLOSED
                 session.closed_reason = "out_of_scope"
@@ -473,7 +473,38 @@ class SessionService:
         )
 
     def reassess_risk(self, session_id: UUID, request: RiskScreenRequest) -> SessionEnvelope:
-        return self.submit_risk_screen(session_id, request)
+        session = self._load_session(session_id)
+        risk = evaluate_risk(session_id, request)
+        self.repository.add_risk(risk)
+        self.repository.add_event(
+            SessionEvent(
+                session_id=session_id,
+                state_before=session.current_state,
+                event_type="risk_reassessment",
+                payload=request.model_dump(),
+            )
+        )
+
+        if risk.risk_level == RiskLevel.HIGH:
+            session.status = SessionStatus.ESCALATED
+            session.closed_at = datetime.now(UTC)
+            session.closed_reason = "safety_escalation"
+            trace = self._transition(session, StateEnum.CRISIS, request.model_dump(), risk.triggered_rule_ids, ["risk.high"])
+            return self._build_envelope(
+                session,
+                trace.transition_id,
+                {"risk_level": risk.risk_level, "triggered_rule_ids": risk.triggered_rule_ids},
+                "risk.high",
+            )
+
+        template_id = PROMPT_BY_STATE.get(session.current_state)
+        trace = self._transition(session, session.current_state, request.model_dump(), risk.triggered_rule_ids, [template_id] if template_id else [])
+        return self._build_envelope(
+            session,
+            trace.transition_id,
+            {"risk_level": risk.risk_level, "triggered_rule_ids": risk.triggered_rule_ids},
+            template_id,
+        )
 
     def get_protocol(self, version: str) -> ProtocolManifest:
         if version != PROTOCOL_MANIFEST["protocol_version"]:

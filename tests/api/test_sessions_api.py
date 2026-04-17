@@ -23,6 +23,53 @@ def test_high_risk_mid_session_interrupts_flow(client) -> None:
     assert response.json()["current_state"] == "crisis"
 
 
+def test_initial_risk_screen_returns_eligibility_prompt(client) -> None:
+    create = client.post("/v1/sessions", json={"user_id": "user-1"}).json()
+    session_id = create["session"]["session_id"]
+
+    response = client.post(f"/v1/sessions/{session_id}/risk-screen", json={})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["current_state"] == "eligibility_check"
+    assert body["template_response"]["template_id"] == "prompt.eligibility"
+
+
+def test_reassess_risk_keeps_current_state_when_not_high_risk(client) -> None:
+    create = client.post("/v1/sessions", json={"user_id": "user-1"}).json()
+    session_id = create["session"]["session_id"]
+    client.post(f"/v1/sessions/{session_id}/risk-screen", json={})
+    client.post(f"/v1/sessions/{session_id}/events", json={"event_type": "eligibility", "payload": {"is_adult": True, "target_condition": "gad"}})
+    client.post(
+        f"/v1/sessions/{session_id}/events",
+        json={"event_type": "situation", "payload": {"situation_text": "presentation prep", "trigger_text": "worry about mistakes"}},
+    )
+
+    response = client.post(f"/v1/sessions/{session_id}/reassess-risk", json={})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["current_state"] == "worry_thought_capture"
+    assert body["state_data"]["risk_level"] == "none"
+
+
+def test_reassess_risk_interrupts_flow_when_high_risk(client) -> None:
+    create = client.post("/v1/sessions", json={"user_id": "user-1"}).json()
+    session_id = create["session"]["session_id"]
+    client.post(f"/v1/sessions/{session_id}/risk-screen", json={})
+    client.post(f"/v1/sessions/{session_id}/events", json={"event_type": "eligibility", "payload": {"is_adult": True, "target_condition": "gad"}})
+
+    response = client.post(
+        f"/v1/sessions/{session_id}/reassess-risk",
+        json={"suicidal_intent": True},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["current_state"] == "crisis"
+    assert body["state_data"]["risk_level"] == "high"
+
+
 def test_wrong_type_input_keeps_state_and_reports_invalid_fields(client) -> None:
     create = client.post("/v1/sessions", json={"user_id": "user-1"}).json()
     session_id = create["session"]["session_id"]
