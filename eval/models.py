@@ -35,6 +35,12 @@ class EvalCase(BaseModel):
     language: str = "ko"
     free_text: str
     tags: list[str] = Field(default_factory=list)
+    source_type: str = "manual"
+    generation_run_id: str = ""
+    generator_model: str = ""
+    generator_prompt_version: str = ""
+    review_status: str = ""
+    review_notes: str = ""
     gold: EvalGold
 
 

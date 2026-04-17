@@ -1,0 +1,64 @@
+{
+  "records": [
+    {
+      "baseline_id": "expanded-live-eval",
+      "status": "official",
+      "run_path": "eval/reports/live/expanded-live-eval",
+      "dataset_path": "eval/datasets/sample_gad_gold.jsonl",
+      "dataset_version": "2026-04-16-expanded-v1",
+      "model_name": "gpt-4.1-mini",
+      "prompt_version": "parser-2026-04-16-v3",
+      "risk_prompt_version": "risk-assist-2026-04-16-v2",
+      "run_timestamp": "2026-04-16T08:18:38.753836",
+      "notes": "Primary official curated 60-case live baseline."
+    },
+    {
+      "baseline_id": "live-thought-distortion-v3",
+      "status": "reference",
+      "run_path": "eval/reports/live/live-thought-distortion-v3",
+      "dataset_path": "eval/datasets/sample_gad_gold.jsonl",
+      "dataset_version": "2026-04-16",
+      "model_name": "gpt-4.1-mini",
+      "prompt_version": "parser-2026-04-16-v3",
+      "risk_prompt_version": "risk-assist-2026-04-16-v2",
+      "run_timestamp": "2026-04-16T07:42:54.420754",
+      "notes": "Small-set 20-case reference run."
+    },
+    {
+      "baseline_id": "clarification-live-v2",
+      "status": "experimental",
+      "run_path": "eval/reports/live/clarification-live-v2",
+      "dataset_path": "eval/datasets/sample_gad_gold.jsonl",
+      "dataset_version": "2026-04-16-expanded-v1",
+      "model_name": "gpt-4.1-mini",
+      "prompt_version": "parser-2026-04-16-v4",
+      "risk_prompt_version": "risk-assist-2026-04-16-v2",
+      "run_timestamp": "2026-04-16T08:38:57.458541",
+      "notes": "Clarification-focused experimental run with tradeoffs."
+    },
+    {
+      "baseline_id": "synthetic-live-eval-002",
+      "status": "experimental_provisional",
+      "run_path": "eval/reports/live/synthetic-live-eval-002",
+      "dataset_path": "eval/datasets/synthetic_gad_dev_live_002.jsonl",
+      "dataset_version": "synthetic-approved-v1",
+      "model_name": "gpt-4.1-mini",
+      "prompt_version": "parser-2026-04-16-v4",
+      "risk_prompt_version": "risk-assist-2026-04-16-v2",
+      "run_timestamp": "2026-04-17T02:54:17.000824",
+      "notes": "Synthetic provisional run; not valid for official performance claims."
+    },
+    {
+      "baseline_id": "synthetic-live-eval-005-reviewed-v2",
+      "status": "experimental_reviewed",
+      "run_path": "eval/reports/live/synthetic-live-eval-005-reviewed-v2",
+      "dataset_path": "eval/datasets/synthetic_gad_dev_live_002_reviewed.jsonl",
+      "dataset_version": "synthetic-reviewed-v2",
+      "model_name": "gpt-4.1-mini",
+      "prompt_version": "parser-2026-04-16-v4",
+      "risk_prompt_version": "risk-assist-2026-04-16-v2",
+      "run_timestamp": "2026-04-17T04:27:20.203244",
+      "notes": "Human-reviewed synthetic reference for internal miss triage only; not an official quality baseline."
+    }
+  ]
+}

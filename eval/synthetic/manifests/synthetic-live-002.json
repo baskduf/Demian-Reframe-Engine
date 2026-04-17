@@ -1,0 +1,38 @@
+{
+  "generation_run_id": "8f559bbd-1b23-4311-ac20-89405e1b4ea9",
+  "dataset_name": "synthetic_gad_dev",
+  "dataset_version": "2026-04-17-v1",
+  "split": "dev",
+  "created_at": "2026-04-17T02:53:08.231072",
+  "config_path": "eval/synthetic/config/default_mix.json",
+  "raw_output_path": "eval\\synthetic\\raw\\synthetic-live-002.jsonl",
+  "review_output_path": "eval\\synthetic\\review\\synthetic-live-002.jsonl",
+  "approved_output_path": "eval\\synthetic\\approved\\synthetic-live-002.jsonl",
+  "generator_model": "gpt-4.1-mini",
+  "generator_prompt_version": "synthetic-generator-2026-04-17-v1",
+  "total_requested_cases": 20,
+  "total_raw_records": 20,
+  "total_review_records": 20,
+  "total_approved_cases": 20,
+  "config": {
+    "dataset_name": "synthetic_gad_dev",
+    "dataset_version": "2026-04-17-v1",
+    "language": "ko",
+    "random_seed": 17,
+    "total_cases": 20,
+    "split": "dev",
+    "case_mix": {
+      "automatic_thought": 4,
+      "distortion": 4,
+      "clarification": 4,
+      "emotion_behavior": 4,
+      "risk": 4
+    },
+    "risk_severity_mix": {
+      "subtle": 1,
+      "moderate": 2,
+      "explicit": 1
+    },
+    "notes": "Default synthetic generation mix for Korean GAD regression development."
+  }
+}

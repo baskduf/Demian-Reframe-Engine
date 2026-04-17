@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from eval.baselines.registry import resolve_baseline_path
 from eval.loader import load_eval_summary, write_json, write_markdown
 from eval.models import EvalComparison, EvalComparisonCaseDelta, EvalComparisonMetricDelta
 
@@ -30,8 +31,8 @@ METRIC_FIELDS = [
 
 
 def compare_runs(baseline_path: str | Path, candidate_path: str | Path) -> EvalComparison:
-    baseline = load_eval_summary(baseline_path)
-    candidate = load_eval_summary(candidate_path)
+    baseline = load_eval_summary(resolve_baseline_path(str(baseline_path)))
+    candidate = load_eval_summary(resolve_baseline_path(str(candidate_path)))
 
     metric_deltas: dict[str, EvalComparisonMetricDelta] = {}
     for field in METRIC_FIELDS:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from eval.baselines.registry import resolve_baseline_path
 from eval.compare_runs import compare_runs
 from eval.models import EvalRunConfig
 from eval.run_eval import run_evaluation
@@ -99,3 +100,20 @@ def test_compare_runs_generates_worsened_case_report(tmp_path) -> None:
     assert "distortion_top3_hit_rate" in comparison.metric_deltas
     assert "automatic_thought_case_hit_rate" in comparison.metric_deltas
     assert "clarification_case_accuracy" in comparison.metric_deltas
+
+
+def test_compare_runs_accepts_locked_baseline_id(tmp_path) -> None:
+    candidate_dir = tmp_path / "candidate"
+    run_evaluation(
+        EvalRunConfig(
+            dataset_path=DATASET_PATH,
+            predictions_path=PREDICTIONS_PATH,
+            output_dir=candidate_dir,
+            mode="static",
+            allow_live_eval=False,
+            report_label="candidate",
+        )
+    )
+    comparison = compare_runs("expanded-live-eval", candidate_dir)
+    assert comparison.baseline_label == "expanded-live-eval"
+    assert resolve_baseline_path("expanded-live-eval").endswith("eval/reports/live/expanded-live-eval")
