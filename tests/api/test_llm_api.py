@@ -53,7 +53,7 @@ def test_needs_clarification_keeps_state_and_returns_missing_fields(mock_client)
     assert response.status_code == 200
     body = response.json()
     assert body["current_state"] == "worry_thought_capture"
-    assert "automatic_thought" in body["state_data"]["missing_fields"]
+    assert "automatic_thought" in body["clarification"]["missing_fields"]
 
 
 def test_llm_risk_flag_does_not_override_deterministic_safety_logic(mock_client) -> None:

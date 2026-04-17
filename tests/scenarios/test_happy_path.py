@@ -8,13 +8,41 @@ def test_happy_path_session(client) -> None:
     steps = [
         (f"/v1/sessions/{session_id}/risk-screen", {}),
         (f"/v1/sessions/{session_id}/events", {"event_type": "eligibility", "payload": {"is_adult": True, "target_condition": "gad"}}),
-        (f"/v1/sessions/{session_id}/events", {"event_type": "situation", "payload": {"situation_text": "상사와 면담 전", "trigger_text": "실수할까 봐 걱정"}}),
-        (f"/v1/sessions/{session_id}/events", {"event_type": "worry", "payload": {"automatic_thought": "틀리면 끝이야", "worry_prediction": "분명 망할 거야"}}),
-        (f"/v1/sessions/{session_id}/events", {"event_type": "emotion", "payload": {"emotions": [{"label": "anxiety", "intensity": 85}], "body_symptoms": ["심장 두근거림"], "safety_behaviors": ["발표를 미루고 싶음"]}}),
-        (f"/v1/sessions/{session_id}/events", {"event_type": "distortion", "payload": {"selected_distortion_ids": ["catastrophizing"]}}),
-        (f"/v1/sessions/{session_id}/events", {"event_type": "evidence_for", "payload": {"evidence_for": ["지난번에 말을 더듬었다"]}}),
-        (f"/v1/sessions/{session_id}/events", {"event_type": "evidence_against", "payload": {"evidence_against": ["준비한 내용은 충분하다"]}}),
-        (f"/v1/sessions/{session_id}/events", {"event_type": "alternative", "payload": {"balanced_view": "실수 하나가 전체 실패를 뜻하지 않는다", "coping_statement": "준비한 핵심 세 문장부터 차분히 말하자"}}),
+        (
+            f"/v1/sessions/{session_id}/events",
+            {"event_type": "situation", "payload": {"situation_text": "before a meeting with my manager", "trigger_text": "fear of making a mistake"}},
+        ),
+        (
+            f"/v1/sessions/{session_id}/events",
+            {"event_type": "worry", "payload": {"automatic_thought": "If I get something wrong, everything is over", "worry_prediction": "I will definitely mess this up"}},
+        ),
+        (
+            f"/v1/sessions/{session_id}/events",
+            {
+                "event_type": "emotion",
+                "payload": {
+                    "emotions": [{"label": "anxiety", "intensity": 85}],
+                    "body_symptoms": ["heart racing"],
+                    "safety_behaviors": ["delaying the presentation"],
+                },
+            },
+        ),
+        (f"/v1/sessions/{session_id}/events", {"event_type": "distortion", "payload": {"selected_distortion_ids": ["uncertainty_focus"]}}),
+        (f"/v1/sessions/{session_id}/events", {"event_type": "evidence_for", "payload": {"evidence_for": ["I stumbled over my words once before"]}}),
+        (
+            f"/v1/sessions/{session_id}/events",
+            {"event_type": "evidence_against", "payload": {"evidence_against": ["I prepared the main points well"]}},
+        ),
+        (
+            f"/v1/sessions/{session_id}/events",
+            {
+                "event_type": "alternative",
+                "payload": {
+                    "balanced_view": "One mistake would not mean the whole conversation failed",
+                    "coping_statement": "I will start with the three key points slowly",
+                },
+            },
+        ),
         (f"/v1/sessions/{session_id}/events", {"event_type": "rerate", "payload": {"re_rated_anxiety": 55, "experiment_required": False}}),
         (f"/v1/sessions/{session_id}/events", {"event_type": "summary", "payload": {"summary_ack": True}}),
     ]

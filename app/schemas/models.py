@@ -47,6 +47,12 @@ class RiskLevel(StrEnum):
     HIGH = "high"
 
 
+class InteractionStatus(StrEnum):
+    ADVANCE = "advance"
+    CLARIFY = "clarify"
+    INTERRUPT = "interrupt"
+
+
 class EmotionScore(BaseModel):
     label: str
     intensity: int = Field(ge=0, le=100)
@@ -100,6 +106,25 @@ class TemplateResponse(BaseModel):
     template_id: str
     message: str
     source: Literal["template"] = "template"
+
+
+class GuidanceBlock(BaseModel):
+    title: str
+    description: str
+    examples: list[str] = Field(default_factory=list)
+
+
+class ChoiceOption(BaseModel):
+    option_id: str
+    label: str
+    description: str = ""
+
+
+class ClarificationBlock(BaseModel):
+    reason_code: str
+    message: str
+    examples: list[str] = Field(default_factory=list)
+    missing_fields: list[str] = Field(default_factory=list)
 
 
 class ProtocolManifest(BaseModel):
@@ -173,6 +198,8 @@ class ThoughtRecord(BaseModel):
     llm_risk_flags: list[LLMRiskFlag] = Field(default_factory=list)
     llm_needs_clarification: bool = False
     llm_missing_fields: list[str] = Field(default_factory=list)
+    interaction_context: dict[str, Any] = Field(default_factory=dict)
+    final_summary: str | None = None
 
 
 class TransitionLog(BaseModel):
@@ -216,10 +243,15 @@ class VersionEnvelope(BaseModel):
 class SessionEnvelope(VersionEnvelope):
     session: Session
     current_state: StateEnum
+    interaction_status: InteractionStatus = InteractionStatus.CLARIFY
     allowed_actions: list[str]
     transition_trace_id: UUID | None = None
     state_data: dict[str, Any] = Field(default_factory=dict)
     template_response: TemplateResponse | None = None
+    guidance: GuidanceBlock | None = None
+    choices: dict[str, list[ChoiceOption]] = Field(default_factory=dict)
+    clarification: ClarificationBlock | None = None
+    collected_slots: dict[str, Any] = Field(default_factory=dict)
 
 
 class CreateSessionRequest(BaseModel):

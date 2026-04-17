@@ -8,14 +8,14 @@ from tests.helpers import advance_to_state, create_session
 @pytest.mark.parametrize(
     ("target_state", "payload"),
     [
-        ("situation_capture", {"event_type": "situation", "payload": {"situation_text": "회의 전"}}),
-        ("worry_thought_capture", {"event_type": "worry", "payload": {"automatic_thought": "망할 거야"}}),
+        ("situation_capture", {"event_type": "situation", "payload": {"situation_text": "work"}}),
+        ("worry_thought_capture", {"event_type": "worry", "payload": {"automatic_thought": "I will fail"}}),
         ("emotion_body_behavior_capture", {"event_type": "emotion", "payload": {"emotions": [{"label": "anxiety", "intensity": 80}]}}),
         ("evidence_for", {"event_type": "evidence_for", "payload": {"evidence_for": []}}),
         ("evidence_against", {"event_type": "evidence_against", "payload": {"evidence_against": []}}),
-        ("alternative_thought", {"event_type": "alternative", "payload": {"balanced_view": "괜찮을 수 있다"}}),
+        ("alternative_thought", {"event_type": "alternative", "payload": {"balanced_view": "It might be okay"}}),
         ("re_rate_anxiety", {"event_type": "rerate", "payload": {"re_rated_anxiety": 50}}),
-        ("behavior_experiment", {"event_type": "experiment", "payload": {"action": "연습"}}),
+        ("behavior_experiment", {"event_type": "experiment", "payload": {"action": "practice"}}),
         ("summary_plan", {"event_type": "summary", "payload": {}}),
     ],
 )
@@ -26,7 +26,8 @@ def test_incomplete_payload_keeps_session_in_same_state(client, target_state: st
     assert response.status_code == 200
     body = response.json()
     assert body["current_state"] == target_state
-    assert "missing_fields" in body["state_data"]
+    assert body["interaction_status"] == "clarify"
+    assert body["clarification"]["missing_fields"]
 
 
 def test_rerate_false_skips_experiment_and_moves_to_summary(client) -> None:

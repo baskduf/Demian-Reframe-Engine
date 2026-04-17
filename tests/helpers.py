@@ -18,15 +18,40 @@ def advance_to_state(client, session_id: str, target_state: str) -> dict:
 
     steps = [
         ("situation_capture", {"event_type": "eligibility", "payload": {"is_adult": True, "target_condition": "gad"}}),
-        ("worry_thought_capture", {"event_type": "situation", "payload": {"situation_text": "회의 전", "trigger_text": "망칠까 걱정"}}),
-        ("emotion_body_behavior_capture", {"event_type": "worry", "payload": {"automatic_thought": "분명 실패할 거야", "worry_prediction": "다 망할 거야"}}),
-        ("distortion_hypothesis", {"event_type": "emotion", "payload": {"emotions": [{"label": "anxiety", "intensity": 80}], "body_symptoms": ["두근거림"], "safety_behaviors": ["회피"]}}),
-        ("evidence_for", {"event_type": "distortion", "payload": {"selected_distortion_ids": ["catastrophizing"]}}),
-        ("evidence_against", {"event_type": "evidence_for", "payload": {"evidence_for": ["지난번에도 실수했다"]}}),
-        ("alternative_thought", {"event_type": "evidence_against", "payload": {"evidence_against": ["준비를 충분히 했다"]}}),
-        ("re_rate_anxiety", {"event_type": "alternative", "payload": {"balanced_view": "실수 가능성은 있지만 끝은 아니다", "coping_statement": "핵심만 차분히 말한다"}}),
+        ("worry_thought_capture", {"event_type": "situation", "payload": {"situation_text": "before a meeting", "trigger_text": "fear of messing up"}}),
+        ("emotion_body_behavior_capture", {"event_type": "worry", "payload": {"automatic_thought": "I will probably fail", "worry_prediction": "Everything will go badly"}}),
+        (
+            "distortion_hypothesis",
+            {
+                "event_type": "emotion",
+                "payload": {
+                    "emotions": [{"label": "anxiety", "intensity": 80}],
+                    "body_symptoms": ["heart racing"],
+                    "safety_behaviors": ["avoiding the conversation"],
+                },
+            },
+        ),
+        ("evidence_for", {"event_type": "distortion", "payload": {"selected_distortion_ids": ["uncertainty_focus"]}}),
+        ("evidence_against", {"event_type": "evidence_for", "payload": {"evidence_for": ["I stumbled once before"]}}),
+        ("alternative_thought", {"event_type": "evidence_against", "payload": {"evidence_against": ["I have prepared well enough"]}}),
+        (
+            "re_rate_anxiety",
+            {
+                "event_type": "alternative",
+                "payload": {
+                    "balanced_view": "A mistake is possible, but it would not define the whole outcome",
+                    "coping_statement": "I will say the first three points slowly",
+                },
+            },
+        ),
         ("behavior_experiment", {"event_type": "rerate", "payload": {"re_rated_anxiety": 60, "experiment_required": True}}),
-        ("summary_plan", {"event_type": "experiment", "payload": {"action": "짧은 발표 연습", "timebox": "10m", "hypothesis": "불안이 조금 줄어든다"}}),
+        (
+            "summary_plan",
+            {
+                "event_type": "experiment",
+                "payload": {"action": "practice a short talk", "timebox": "10m", "hypothesis": "my anxiety will drop a little"},
+            },
+        ),
         ("close_session", {"event_type": "summary", "payload": {"summary_ack": True}}),
     ]
 
