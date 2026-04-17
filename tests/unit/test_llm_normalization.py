@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from app.llm.parser import _normalize_structured_output
-from app.llm.risk_assist import _normalize_risk_payload
+from app.llm.risk_assist import _fallback_risk_flags, _normalize_risk_payload
 from app.schemas.models import StateEnum
 
 
@@ -158,3 +158,42 @@ def test_parser_marks_missing_emotion_for_ambiguous_body_text() -> None:
     )
     assert normalized["needs_clarification"] is True
     assert "body_symptoms_or_safety_behaviors" in normalized["missing_fields"]
+
+
+def test_parser_adds_fallback_thought_and_behavior_candidates_from_free_text() -> None:
+    normalized = _normalize_structured_output(
+        {
+            "situation_candidates": [],
+            "automatic_thought_candidates": [],
+            "worry_prediction_candidates": [],
+            "emotion_candidates": [],
+            "behavior_candidates": [],
+            "distortion_candidates": [],
+            "risk_flags": [],
+            "needs_clarification": False,
+            "missing_fields": [],
+            "confidence": {
+                "overall": 0.4,
+                "situation": 0.0,
+                "automatic_thought": 0.0,
+                "emotion": 0.0,
+                "behavior": 0.0,
+                "distortion": 0.0,
+                "risk": 0.0,
+            },
+        },
+        state=StateEnum.WORRY_THOUGHT_CAPTURE,
+        free_text="발표를 망치면 다들 내가 무능하다고 생각할 거야. 그래서 아예 피하고 싶어.",
+    )
+    assert normalized["automatic_thought_candidates"]
+    assert "무능" in normalized["automatic_thought_candidates"][0]["text"]
+    assert normalized["behavior_candidates"]
+    assert "피하고" in normalized["behavior_candidates"][0]["text"]
+
+
+def test_fallback_risk_flags_detects_exposed_risk_language() -> None:
+    flags = _fallback_risk_flags("희망이 없고 없어지고 싶어. 요즘 자살 생각도 들어.")
+    labels = {flag.flag for flag in flags}
+    assert "hopelessness" in labels
+    assert "passive_death_wish" in labels
+    assert "suicidal_intent" in labels

@@ -24,6 +24,14 @@ RISK_FLAG_ALIASES = {
     "panic_dyscontrol": "acute_deterioration",
 }
 
+RISK_FALLBACK_MARKERS: dict[str, tuple[str, ...]] = {
+    "suicidal_intent": ("죽고 싶", "자살", "끝내고 싶", "방법이 떠오", "나를 해치"),
+    "passive_death_wish": ("사라지고 싶", "없어지고 싶", "그냥 없어졌으면", "깨어나지 않았으면"),
+    "hopelessness": ("희망이 없", "아무 의미 없", "다 끝났", "소용없"),
+    "psychotic_expression": ("감시하", "목소리", "누가 나를", "해코지", "쫓아"),
+    "acute_deterioration": ("통제가 안", "무너질 것 같", "패닉", "멈출 수 없", "완전히 무너"),
+}
+
 
 def _normalize_risk_flag(flag: str) -> str:
     normalized = flag.strip().lower()
@@ -39,6 +47,23 @@ def _normalize_risk_payload(parsed: dict[str, Any]) -> dict[str, Any]:
         candidate["flag"] = _normalize_risk_flag(str(candidate.get("flag", "")))
         normalized_flags.append(candidate)
     return {"risk_flags": normalized_flags}
+
+
+def _fallback_risk_flags(free_text: str) -> list[CandidateRiskFlag]:
+    lowered = free_text.lower()
+    flags: list[CandidateRiskFlag] = []
+    for flag, markers in RISK_FALLBACK_MARKERS.items():
+        for marker in markers:
+            if marker in lowered:
+                flags.append(
+                    CandidateRiskFlag(
+                        flag=flag,
+                        confidence=0.65,
+                        evidence_span=marker,
+                    )
+                )
+                break
+    return flags
 
 
 class LLMRiskAssist:
@@ -81,6 +106,8 @@ class LLMRiskAssist:
             )
             parsed = _normalize_risk_payload(parsed)
             flags = [CandidateRiskFlag.model_validate(item) for item in parsed["risk_flags"]]
+            if not flags:
+                flags = _fallback_risk_flags(free_text)
             log = LLMInvocationLog(
                 session_id=session_id,
                 state=state,
@@ -96,6 +123,7 @@ class LLMRiskAssist:
             )
             return flags, log
         except OpenAIClientError as exc:
+            fallback_flags = _fallback_risk_flags(free_text)
             log = LLMInvocationLog(
                 session_id=session_id,
                 state=state,
@@ -106,8 +134,8 @@ class LLMRiskAssist:
                 request_hash=self.client._hash_text(user_prompt),
                 response_hash=self.client._hash_text(str(exc)),
                 raw_response=str(exc),
-                parsed_output={"risk_flags": []},
-                succeeded=False,
-                error_code=exc.code,
+                parsed_output={"risk_flags": [flag.model_dump() for flag in fallback_flags]},
+                succeeded=not fallback_flags,
+                error_code=None if fallback_flags else exc.code,
             )
-            return [], log
+            return fallback_flags, log

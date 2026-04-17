@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from pydantic import ValidationError
@@ -194,6 +195,37 @@ STATE_REQUIRED_MISSING_FIELDS: dict[StateEnum, tuple[str, ...]] = {
     StateEnum.WORRY_THOUGHT_CAPTURE: ("automatic_thought", "worry_prediction"),
     StateEnum.EMOTION_BODY_BEHAVIOR_CAPTURE: ("emotions", "body_symptoms_or_safety_behaviors"),
 }
+SENTENCE_SPLIT_RE = re.compile(r"[.!?。！？\n]+")
+THOUGHT_MARKERS = (
+    "생각",
+    "같아",
+    "거야",
+    "무능",
+    "인정",
+    "비웃",
+    "실패",
+    "큰일",
+    "소용없",
+    "망할",
+    "문제야",
+)
+BEHAVIOR_MARKERS = (
+    "피하",
+    "숨고 싶",
+    "확인",
+    "다시 확인",
+    "준비만",
+    "집에 가",
+    "밖에 나가",
+    "걷",
+    "조절",
+    "미루",
+    "도망",
+    "회피",
+    "물어보",
+    "검색",
+    "안 하고 싶",
+)
 
 
 def _contains_banned_terms(value: Any) -> bool:
@@ -263,6 +295,80 @@ def _dedupe_fields(fields: list[str]) -> list[str]:
     return deduped
 
 
+def _split_sentences(text: str) -> list[str]:
+    return [segment.strip() for segment in SENTENCE_SPLIT_RE.split(text) if segment.strip()]
+
+
+def _append_text_candidate(candidates: list[dict[str, Any]], text: str, confidence: float = 0.55) -> None:
+    normalized = " ".join(text.strip().split())
+    if not normalized:
+        return
+    if any(item.get("text") == normalized for item in candidates):
+        return
+    candidates.append({"text": normalized, "confidence": confidence, "evidence_span": normalized})
+
+
+def _fallback_thought_candidate(free_text: str) -> str | None:
+    for sentence in _split_sentences(free_text):
+        lowered = sentence.lower()
+        if any(marker in lowered for marker in AMBIGUITY_MARKERS):
+            continue
+        if "무슨 생각" in lowered or "어떤 생각" in lowered:
+            continue
+        if any(marker in lowered for marker in THOUGHT_MARKERS):
+            return sentence
+    return None
+
+
+def _fallback_prediction_candidate(free_text: str) -> str | None:
+    for sentence in _split_sentences(free_text):
+        lowered = sentence.lower()
+        if any(marker in lowered for marker in FUTURE_MARKERS):
+            return sentence
+    return None
+
+
+def _fallback_behavior_candidate(free_text: str) -> str | None:
+    for sentence in _split_sentences(free_text):
+        lowered = sentence.lower()
+        if any(marker in lowered for marker in BEHAVIOR_MARKERS):
+            return sentence
+    return None
+
+
+def _enrich_candidates_from_free_text(parsed: dict[str, Any], *, free_text: str) -> dict[str, Any]:
+    normalized = dict(parsed)
+    situation_candidates = list(normalized.get("situation_candidates", []))
+    thought_candidates = list(normalized.get("automatic_thought_candidates", []))
+    prediction_candidates = list(normalized.get("worry_prediction_candidates", []))
+    behavior_candidates = list(normalized.get("behavior_candidates", []))
+
+    if not situation_candidates:
+        first_sentence = next(iter(_split_sentences(free_text)), "")
+        _append_text_candidate(situation_candidates, first_sentence, confidence=0.45)
+
+    if not thought_candidates:
+        thought_text = _fallback_thought_candidate(free_text)
+        if thought_text:
+            _append_text_candidate(thought_candidates, thought_text)
+
+    if not prediction_candidates:
+        prediction_text = _fallback_prediction_candidate(free_text)
+        if prediction_text:
+            _append_text_candidate(prediction_candidates, prediction_text)
+
+    if not behavior_candidates:
+        behavior_text = _fallback_behavior_candidate(free_text)
+        if behavior_text:
+            _append_text_candidate(behavior_candidates, behavior_text)
+
+    normalized["situation_candidates"] = situation_candidates
+    normalized["automatic_thought_candidates"] = thought_candidates
+    normalized["worry_prediction_candidates"] = prediction_candidates
+    normalized["behavior_candidates"] = behavior_candidates
+    return normalized
+
+
 def _normalize_structured_output(parsed: dict[str, Any], *, state: StateEnum | None = None, free_text: str = "") -> dict[str, Any]:
     normalized = dict(parsed)
     automatic_candidates = _normalize_text_candidates(
@@ -283,6 +389,7 @@ def _normalize_structured_output(parsed: dict[str, Any], *, state: StateEnum | N
         normalized_emotions.append(candidate)
     normalized["emotion_candidates"] = normalized_emotions
     normalized["distortion_candidates"] = _normalize_distortion_candidates(parsed.get("distortion_candidates", []))
+    normalized = _enrich_candidates_from_free_text(normalized, free_text=free_text)
     if state is not None:
         normalized = _apply_state_clarification_rules(normalized, state=state, free_text=free_text)
     return normalized
