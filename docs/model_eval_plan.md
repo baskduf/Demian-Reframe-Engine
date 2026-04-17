@@ -100,6 +100,14 @@ Live mode:
 - only runs when `OPENAI_API_KEY` and `OPENAI_ENABLE_LIVE_EVAL=true` are both set
 - writes run-scoped outputs under a dedicated report directory so results can be compared over time
 
+Synthetic generation mode:
+
+- uses a separate synthetic generator prompt and workflow under `eval/synthetic/`
+- is intended to create `dev` and `regression` cases, not locked benchmark evidence
+- follows `generate -> review -> promote -> export`
+- keeps provenance metadata such as generator model, prompt version, and generation run id
+- requires human review before a case is promoted into an evaluator-ready dataset
+
 ## Output Artifacts
 
 Each evaluation run writes:
@@ -113,6 +121,13 @@ Comparison runs write:
 - `comparison.json`
 - `comparison.md`
 
+Synthetic runs write:
+
+- raw generation JSONL
+- review queue JSONL
+- approved synthetic JSONL
+- run manifest JSON
+
 These outputs are designed to support both machine-readable trend tracking and reviewer-friendly error inspection.
 
 ## Live Eval Interpretation
@@ -121,6 +136,25 @@ These outputs are designed to support both machine-readable trend tracking and r
 - `risk_false_negative_count` should be reviewed before any overall hit-rate trend.
 - `schema_valid_rate`, `fallback_rate`, and `banned_content_rate` should be monitored together because they reflect operational reliability, not just semantic quality.
 - When comparing runs, prioritize newly failed risk cases and newly increased fallback counts over small movement in non-safety hit-rate metrics.
+
+## Locked Baseline Policy
+
+- Use locked run artifacts as the default comparison baseline instead of rerunning unchanged evaluations.
+- `expanded-live-eval` is the official curated baseline.
+- `live-thought-distortion-v3` is a small-set reference.
+- `clarification-live-v2` and `synthetic-live-eval-002` are experimental and should not be treated as official acceptance baselines.
+- `synthetic-live-eval-005-reviewed-v2` is an `experimental_reviewed` synthetic reference used for internal miss triage only.
+- If dataset, model, parser prompt, risk prompt, or post-processing changes, create a new run and compare against the locked baseline.
+- Curated baselines and synthetic runs should not be interpreted as equivalent evidence classes.
+
+## Candidate Freeze Policy
+
+- candidate freeze decisions must be grounded in the curated official baseline plus reviewed synthetic miss triage
+- reviewed synthetic runs may be used to classify misses as `model_error`, `gold_strictness`, or `state_tradeoff`
+- only `model_error` findings justify another parser or prompt change before freeze
+- `gold_strictness` and `state_tradeoff` findings should be resolved through dataset policy, labeling policy, or evaluation interpretation
+- until reviewed synthetic triage is complete, do not promote a model candidate to a fixed production reference
+- a written candidate freeze decision artifact should be stored alongside the triage output so the freeze rationale is reproducible
 
 ## Initial Dataset Policy
 
@@ -133,3 +167,11 @@ The initial sample gold set is intentionally small and mixed:
 - emotion / body / behavior mixture cases
 
 The current curated repository set is larger than the original seed and is intended to improve regression reliability, but it is still not a validated clinical benchmark.
+
+## Synthetic-First Policy
+
+- Synthetic cases may be used to expand development and regression coverage quickly.
+- Synthetic cases must be marked with provenance metadata and kept distinguishable from manual or external cases.
+- Synthetic cases should not be treated as final holdout evidence.
+- Approved synthetic cases should only enter evaluation after human review for Korean naturalness, label consistency, and conservative risk labeling.
+- Synthetic export must reject invalid cases such as duplicate case ids, disallowed tags, empty free text, garbled text, or inconsistent risk labeling.

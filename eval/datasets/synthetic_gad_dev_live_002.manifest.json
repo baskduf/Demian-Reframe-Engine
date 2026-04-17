@@ -1,0 +1,24 @@
+{
+  "dataset_name": "synthetic_gad_dev_live_002",
+  "dataset_version": "synthetic-approved-v1",
+  "case_count": 20,
+  "language": "ko",
+  "notes": "Approved synthetic evaluation cases",
+  "case_mix": {
+    "distortion": 4,
+    "emotion_behavior": 4,
+    "anxiety": 3,
+    "behavior": 1,
+    "automatic_thought": 4,
+    "clarification": 4,
+    "worry": 1,
+    "불안": 1,
+    "risk": 4,
+    "worry_thought_capture": 2,
+    "worry_thought": 1,
+    "physical_symptom": 1,
+    "concentration_difficulty": 1,
+    "explicit": 1,
+    "suicidal_intent": 1
+  }
+}

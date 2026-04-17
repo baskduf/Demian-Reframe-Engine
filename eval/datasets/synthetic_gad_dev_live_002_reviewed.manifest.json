@@ -1,0 +1,14 @@
+{
+  "dataset_name": "synthetic_gad_dev_live_002_reviewed",
+  "dataset_version": "synthetic-reviewed-v2",
+  "case_count": 20,
+  "language": "ko",
+  "notes": "Manually reviewed synthetic dataset aligned to explicit text evidence and engine clarification rules. Use for dev/regression only, not as official external validation.",
+  "case_mix": {
+    "automatic_thought": 15,
+    "distortion": 7,
+    "clarification": 0,
+    "emotion_behavior": 4,
+    "risk": 1
+  }
+}

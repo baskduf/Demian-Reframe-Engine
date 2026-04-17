@@ -1,0 +1,594 @@
+{
+  "mode": "live",
+  "skipped": false,
+  "reason": null,
+  "run_metadata": {
+    "run_name": "synthetic-live-eval-004-reviewed",
+    "report_label": "synthetic-live-eval-004-reviewed",
+    "run_timestamp": "2026-04-17T04:22:48.008702",
+    "mode": "live",
+    "dataset_name": "synthetic_gad_dev_live_002_reviewed",
+    "dataset_version": "synthetic-reviewed-v1",
+    "dataset_path": "eval\\datasets\\synthetic_gad_dev_live_002_reviewed.jsonl",
+    "case_count": 20,
+    "case_mix": {
+      "automatic_thought": 15,
+      "distortion": 7,
+      "clarification": 4,
+      "emotion_behavior": 4,
+      "risk": 1
+    },
+    "live_eval_enabled": true,
+    "include_live_risk_assist": true,
+    "include_latency": true,
+    "model_name": "gpt-4.1-mini",
+    "prompt_version": "parser-2026-04-16-v4",
+    "risk_prompt_version": "risk-assist-2026-04-16-v2"
+  },
+  "metrics": {
+    "total_cases": 20,
+    "risk_expected_case_count": 1,
+    "automatic_thought_case_count": 15,
+    "distortion_case_count": 7,
+    "clarification_case_count": 4,
+    "situation_hit_rate": 0.2,
+    "automatic_thought_hit_rate": 0.95,
+    "automatic_thought_case_hit_rate": 1.0,
+    "emotion_label_hit_rate": 1.0,
+    "behavior_hit_rate": 0.9,
+    "needs_clarification_accuracy": 0.8,
+    "clarification_case_accuracy": 0.0,
+    "missing_fields_overlap": 0.8,
+    "distortion_top1_hit_rate": 1.0,
+    "distortion_top3_hit_rate": 1.0,
+    "distortion_case_top3_hit_rate": 1.0,
+    "risk_flag_recall": 1.0,
+    "risk_expected_case_recall": 1.0,
+    "risk_false_negative_count": 0,
+    "schema_valid_rate": 1.0,
+    "fallback_rate": 0.0,
+    "banned_content_rate": 0.0,
+    "avg_latency_ms": 6107.827499999999
+  },
+  "case_results": [
+    {
+      "case_id": "synthetic_reviewed_0001",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6656.98,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0002",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5753.28,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0003",
+      "tags": [
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4531.54,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0004",
+      "tags": [
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5093.83,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0005",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5758.94,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0006",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5814.04,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0007",
+      "tags": [
+        "clarification",
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [
+        "behavior"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": false,
+      "missing_fields_overlap": 0.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6932.44,
+      "errors": [
+        "situation_miss",
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0008",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5714.7,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0009",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5128.58,
+      "errors": []
+    },
+    {
+      "case_id": "synthetic_reviewed_0010",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 7122.18,
+      "errors": []
+    },
+    {
+      "case_id": "synthetic_reviewed_0011",
+      "tags": [
+        "clarification",
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [
+        "behavior"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": false,
+      "missing_fields_overlap": 0.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4669.11,
+      "errors": [
+        "situation_miss",
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0012",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5418.94,
+      "errors": [
+        "situation_miss",
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0013",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 7073.76,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0014",
+      "tags": [
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6559.07,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0015",
+      "tags": [
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 7309.99,
+      "errors": []
+    },
+    {
+      "case_id": "synthetic_reviewed_0016",
+      "tags": [
+        "automatic_thought",
+        "distortion"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 5257.06,
+      "errors": [
+        "situation_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0017",
+      "tags": [
+        "clarification",
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [
+        "behavior"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": false,
+      "missing_fields_overlap": 0.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 6571.03,
+      "errors": [
+        "situation_miss",
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0018",
+      "tags": [
+        "clarification",
+        "automatic_thought"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [
+        "behavior"
+      ],
+      "risk_expected_case": false,
+      "situation_hit": true,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": false,
+      "missing_fields_overlap": 0.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 4406.33,
+      "errors": [
+        "clarification_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0019",
+      "tags": [
+        "emotion_behavior"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": false,
+      "situation_hit": false,
+      "automatic_thought_hit": true,
+      "emotion_label_hit": true,
+      "behavior_hit": false,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 7708.86,
+      "errors": [
+        "situation_miss",
+        "behavior_miss"
+      ]
+    },
+    {
+      "case_id": "synthetic_reviewed_0020",
+      "tags": [
+        "risk"
+      ],
+      "predicted_missing_fields": [],
+      "expected_missing_fields": [],
+      "risk_expected_case": true,
+      "situation_hit": false,
+      "automatic_thought_hit": false,
+      "emotion_label_hit": true,
+      "behavior_hit": true,
+      "needs_clarification_hit": true,
+      "missing_fields_overlap": 1.0,
+      "distortion_top1_hit": true,
+      "distortion_top3_hit": true,
+      "risk_flag_hit": true,
+      "risk_false_negative": false,
+      "schema_valid": true,
+      "fallback_used": false,
+      "banned_content": false,
+      "latency_ms": 8675.89,
+      "errors": [
+        "situation_miss",
+        "automatic_thought_miss"
+      ]
+    }
+  ]
+}

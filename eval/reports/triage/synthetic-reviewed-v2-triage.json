@@ -1,0 +1,119 @@
+{
+  "run_name": "synthetic-live-eval-005-reviewed-v2",
+  "dataset_name": "synthetic_gad_dev_live_002_reviewed",
+  "dataset_version": "synthetic-reviewed-v2",
+  "policy": {
+    "official_quality_source": "expanded-live-eval",
+    "synthetic_role": "internal_regression_reference",
+    "freeze_decision_rule": "Only model_error cases may justify model changes. gold_strictness and state_tradeoff cases do not."
+  },
+  "summary": {
+    "total_miss_events": 19,
+    "gold_strictness_count": 15,
+    "state_tradeoff_count": 2,
+    "model_error_count": 2
+  },
+  "triage": {
+    "situation_miss": [
+      {
+        "case_id": "synthetic_reviewed_0001",
+        "classification": "gold_strictness",
+        "reason": "Model likely returns a broad presentation context, while acceptable situation text is narrowly worded."
+      },
+      {
+        "case_id": "synthetic_reviewed_0002",
+        "classification": "gold_strictness",
+        "reason": "Situation phrasing is narrower than the likely model summary of the same meeting/presentation context."
+      },
+      {
+        "case_id": "synthetic_reviewed_0003",
+        "classification": "gold_strictness",
+        "reason": "Emotion-body case likely yields a broad anxious-morning context rather than the single approved wording."
+      },
+      {
+        "case_id": "synthetic_reviewed_0004",
+        "classification": "gold_strictness",
+        "reason": "Situation acceptable list is tighter than the likely model summary of a stressful presentation event."
+      },
+      {
+        "case_id": "synthetic_reviewed_0005",
+        "classification": "gold_strictness",
+        "reason": "Case is dominated by thought content; situation wording is underspecified and likely under-accepts valid variants."
+      },
+      {
+        "case_id": "synthetic_reviewed_0007",
+        "classification": "gold_strictness",
+        "reason": "Situation is present but approved phrasing is narrow relative to the full text."
+      },
+      {
+        "case_id": "synthetic_reviewed_0012",
+        "classification": "gold_strictness",
+        "reason": "Case centers on persistent anxiety and sleep disruption; acceptable situation wording is narrower than likely model output."
+      },
+      {
+        "case_id": "synthetic_reviewed_0013",
+        "classification": "gold_strictness",
+        "reason": "Situation likely paraphrased validly by the model, but acceptable wording is constrained."
+      },
+      {
+        "case_id": "synthetic_reviewed_0014",
+        "classification": "gold_strictness",
+        "reason": "Emotion-body context is plausible, but gold only allows a small subset of valid situation summaries."
+      },
+      {
+        "case_id": "synthetic_reviewed_0016",
+        "classification": "gold_strictness",
+        "reason": "Model likely captures the upcoming presentation context, while gold keeps only one narrow phrasing."
+      },
+      {
+        "case_id": "synthetic_reviewed_0017",
+        "classification": "gold_strictness",
+        "reason": "Situation is inferable from the text, but gold is stricter than necessary."
+      },
+      {
+        "case_id": "synthetic_reviewed_0018",
+        "classification": "gold_strictness",
+        "reason": "Text clearly describes an upcoming meeting context, but approved situation wording is too narrow."
+      },
+      {
+        "case_id": "synthetic_reviewed_0019",
+        "classification": "gold_strictness",
+        "reason": "Emotion-body case likely admits multiple valid situation summaries beyond the current acceptable wording."
+      },
+      {
+        "case_id": "synthetic_reviewed_0020",
+        "classification": "gold_strictness",
+        "reason": "High-risk case has broad psychosocial context; approved situation phrases are too specific."
+      }
+    ],
+    "automatic_thought_miss": [
+      {
+        "case_id": "synthetic_reviewed_0007",
+        "classification": "state_tradeoff",
+        "reason": "The text mixes feared outcome and interpretation. Miss likely reflects automatic_thought vs worry_prediction boundary, not a pure extraction failure."
+      },
+      {
+        "case_id": "synthetic_reviewed_0015",
+        "classification": "model_error",
+        "reason": "The text contains explicit automatic thought clauses that should be recoverable without relying on broad paraphrase."
+      }
+    ],
+    "behavior_miss": [
+      {
+        "case_id": "synthetic_reviewed_0003",
+        "classification": "state_tradeoff",
+        "reason": "The text mixes body arousal and coping action. Miss likely reflects indirect behavior wording rather than absence of signal."
+      },
+      {
+        "case_id": "synthetic_reviewed_0012",
+        "classification": "model_error",
+        "reason": "Sleep disruption is explicitly stated and should be captured as behavior-level evidence."
+      },
+      {
+        "case_id": "synthetic_reviewed_0019",
+        "classification": "gold_strictness",
+        "reason": "The text describes impaired concentration, but the acceptable behavior phrasing may be narrower than the model's valid paraphrase."
+      }
+    ]
+  }
+}

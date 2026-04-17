@@ -201,6 +201,13 @@ Compare two evaluation runs:
 python -m eval.compare_runs --baseline eval/reports/static/run-a --candidate eval/reports/live/run-b --output-dir eval/reports/comparison/run-a-vs-run-b
 ```
 
+Inspect locked baselines:
+
+```bash
+python -m eval.list_baselines list
+python -m eval.show_baseline show --id expanded-live-eval
+```
+
 Comparison artifacts:
 
 - `comparison.json`
@@ -224,6 +231,51 @@ Reports surface both overall metrics and subset metrics such as `automatic_thoug
 
 This dataset is still an internal prompt/parser regression tool, not clinical benchmarking evidence.
 
+## Baseline Policy
+
+The project now uses locked evaluation artifacts as official baselines.
+
+- `expanded-live-eval` is the primary official curated baseline.
+- `live-thought-distortion-v3` is a small-set reference run.
+- `clarification-live-v2` is experimental.
+- `synthetic-live-eval-002` is provisional and not valid for official performance claims.
+- `synthetic-live-eval-005-reviewed-v2` is a reviewed synthetic reference for internal miss triage only.
+
+Rules:
+
+- if dataset, model, parser prompt, and risk prompt are unchanged, reuse the locked artifact instead of rerunning live eval
+- if code, prompts, post-processing, or dataset changes, create a new run and compare against the locked baseline
+- curated baselines and synthetic runs must not be treated as directly interchangeable quality evidence
+- human-reviewed synthetic datasets are required before synthetic runs can be used for anything beyond internal development signals
+- reviewed synthetic references are allowed for miss triage and prompt iteration, but not for official quality claims or freeze approval by themselves
+
+## Synthetic Dataset Workflow
+
+Synthetic evaluation data is now supported as a development-only workflow.
+
+Directory layout:
+
+- `eval/synthetic/config/`
+- `eval/synthetic/raw/`
+- `eval/synthetic/review/`
+- `eval/synthetic/approved/`
+- `eval/synthetic/manifests/`
+
+Core workflow:
+
+```bash
+python -m eval.synthetic.generate --run-name synthetic-dev-001
+python -m eval.synthetic.prepare_review --run-name synthetic-dev-001 --raw-path eval/synthetic/raw/synthetic-dev-001.jsonl
+python -m eval.synthetic.promote --run-name synthetic-dev-001 --review-path eval/synthetic/review/synthetic-dev-001.jsonl --export-dataset-path eval/datasets/synthetic_dev.jsonl
+```
+
+Rules:
+
+- generated cases first land in `raw`
+- only schema-valid cases move into `review`
+- only `approved` and validation-gated review records move into `approved` or exported evaluator datasets
+- synthetic cases are for `dev/regression` use, not final effectiveness claims
+
 ## Current Performance Snapshot
 
 Latest expanded Korean live evaluation baseline and follow-up runs are stored under `eval/reports/live/`.
@@ -243,6 +295,21 @@ What is still weaker:
 - recent clarification-focused runs improved `clarification_case_accuracy` but regressed `emotion_label_hit_rate` and overall `needs_clarification_accuracy`
 
 The current evaluation stack should be read as an internal regression harness for prompt and parser iteration, not as clinical-grade evidence of effectiveness.
+
+## Candidate Freeze Rule
+
+The current model should be treated as a `candidate freeze`, not a production freeze.
+
+- official quality judgment must continue to use `expanded-live-eval`
+- synthetic reviewed runs are only for internal miss triage
+- only misses classified as `model_error` should justify another model tweak
+- misses classified as `gold_strictness` or `state_tradeoff` should be resolved in data policy or evaluation interpretation, not by changing the model
+
+Current reviewed synthetic triage is recorded in:
+
+- `eval/reports/triage/synthetic-reviewed-v2-triage.md`
+- `eval/reports/triage/synthetic-reviewed-v2-triage.json`
+- `eval/reports/triage/candidate-freeze-decision.md`
 
 ## Design Docs
 
